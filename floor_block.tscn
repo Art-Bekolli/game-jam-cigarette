@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://b1fv0aqujjm3k"]
+
+[ext_resource type="Texture2D" uid="uid://d0bvv7bb6yab6" path="res://pngtree-street-light-icon-png-image_18177931.webp" id="1_01gtq"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_7exjq"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_7exjq"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7exjq"]
+size = Vector3(0.4984131, 1, 0.49768066)
+
+[node name="FloorBlock" type="Node3D" unique_id=113252652]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=381665284]
+transform = Transform3D(4, 0, 0, 0, 0.2, 0, 0, 0, 4, 0, 0, 0)
+mesh = SubResource("PlaneMesh_7exjq")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D" unique_id=1537339718]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0)
+physics_material_override = SubResource("PhysicsMaterial_7exjq")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D" unique_id=1683830991]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_7exjq")
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=224809172]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 1.0229872, 0.72205555, 0)
+texture = ExtResource("1_01gtq")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Sprite3D" unique_id=191701813]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.96561575, 0)
+
+[node name="Sprite3D2" type="Sprite3D" parent="." unique_id=1006622822]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.9121436, 0.7314763, 2.0099082)
+texture = ExtResource("1_01gtq")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Sprite3D2" unique_id=351904792]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.96561575, 0)
+
+[node name="Sprite3D3" type="Sprite3D" parent="." unique_id=1035207266]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.9227577, 0.7407987, -2.0177717)
+texture = ExtResource("1_01gtq")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Sprite3D3" unique_id=1318196394]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.96561575, 0)

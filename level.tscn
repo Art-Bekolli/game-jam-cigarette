@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://ctqqxvvab6ujr"]
+
+[ext_resource type="PackedScene" uid="uid://ww0l3g2c12mb" path="res://tipi.tscn" id="1_u52ul"]
+[ext_resource type="PackedScene" uid="uid://b1fv0aqujjm3k" path="res://floor_block.tscn" id="1_vonw3"]
+
+[sub_resource type="GDScript" id="GDScript_afelo"]
+script/source = "extends Node3D
+
+@export var floor_block_scene: PackedScene
+@export var player: Node3D
+
+const TOTAL_BLOCKS = 20
+const BLOCK_SIZE = 4.0
+# Increase this from 2 to 6 or 8 so blocks don't disappear in front of the camera
+const VISIBLE_DISTANCE = 24.0 # 6 blocks * 4.0 size = 24 meters
+
+var spawned_blocks: Array[Node3D] = []
+
+func _ready():
+	if not floor_block_scene:
+		push_error(\"Please assign FloorBlock.tscn to the Inspector!\")
+		return
+		
+	for i in range(TOTAL_BLOCKS):
+		var block = floor_block_scene.instantiate() as Node3D
+		add_child(block)
+		block.position = Vector3(0, 0, -i * BLOCK_SIZE)
+		spawned_blocks.append(block)
+
+func _process(_delta):
+	if not player:
+		return
+
+	for block in spawned_blocks:
+		# Calculate actual 3D distance between player and block
+		var dist = player.global_position.distance_to(block.global_position)
+		
+		# Show if within range
+		block.visible = dist <= VISIBLE_DISTANCE
+"
+
+[node name="Level" type="Node3D" unique_id=181682921 node_paths=PackedStringArray("player")]
+script = SubResource("GDScript_afelo")
+floor_block_scene = ExtResource("1_vonw3")
+player = NodePath("CharacterBody3D")
+
+[node name="CharacterBody3D" parent="." unique_id=504771904 instance=ExtResource("1_u52ul")]

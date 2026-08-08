@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bkakh1t25aghl"]
+
+[ext_resource type="Texture2D" uid="uid://l8wjub1gt3b8" path="res://hand_sprite_cursor-Sheet-Sheet.png" id="1_u4p2i"]
+
+[node name="hand" type="Node2D" unique_id=212490599]
+
+[node name="HandSpriteCursorSheetSheet" type="Sprite2D" parent="." unique_id=402107611]
+texture_filter = 1
+texture = ExtResource("1_u4p2i")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1722644122]
+zoom = Vector2(3.33, 3.33)

@@ -1,0 +1,189 @@
+[gd_scene format=3 uid="uid://ww0l3g2c12mb"]
+
+[ext_resource type="Texture2D" uid="uid://b0bpe5g1sefo7" path="res://realistic-hand-with-hands-up-gesture-showing-alert-or-surrender-ideal-for-signs-apps-or-campaigns-png.webp" id="1_bkvvr"]
+[ext_resource type="Texture2D" uid="uid://d0bvv7bb6yab6" path="res://pngtree-street-light-icon-png-image_18177931.webp" id="1_ufhrt"]
+[ext_resource type="Texture2D" uid="uid://dpdtssxxicym5" path="res://cigarette hand.png" id="2_xafag"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_7exjq"]
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_7exjq"]
+
+[sub_resource type="GDScript" id="GDScript_7exjq"]
+resource_name = "tipi"
+script/source = "extends CharacterBody3D
+
+
+const SPEED = 5.0
+const JUMP_VELOCITY = 4.5
+var mouse_sensitivity = 0.002
+var gravity = ProjectSettings.get_setting(\"physics/3d/default_gravity\")
+
+# --- UI Variables ---
+@export var smoke_bar: ProgressBar  # This creates a slot in the Inspector
+
+# Sprite Textures
+@export var default_texture: Texture2D
+@export var smoking_texture: Texture2D
+
+
+# Smoking Mechanic Variables
+var is_smoking = false
+var smoke_meter: float = 0.0
+const MAX_SMOKE = 100.0
+const DRAG_SENSITIVITY = 0.5  # Higher = fills faster per pixel dragged
+
+# Idle / Walk Bobbing
+const IDLE_BOB_FREQ = 2.0
+const IDLE_BOB_AMP = 0.005
+const WALK_BOB_FREQ = 8.0
+const WALK_BOB_AMP = 0.02
+var bob_time = 0.0
+
+@onready var camera = $Camera3D
+@onready var sprite_3d = $Camera3D/Sprite3D
+@onready var default_sprite_pos = sprite_3d.position
+
+func _ready():
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	
+	# Make sure the UI bar starts at 0 when the game begins
+	if smoke_bar:
+		smoke_bar.value = smoke_meter
+
+func _unhandled_input(event):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		is_smoking = event.pressed
+		if is_smoking and smoking_texture:
+			sprite_3d.texture = smoking_texture
+		elif default_texture:
+			sprite_3d.texture = default_texture
+
+	if event is InputEventMouseMotion:
+		if is_smoking:
+			if event.relative.y > 0:
+				smoke_meter = clamp(smoke_meter + (event.relative.y * (DRAG_SENSITIVITY * 0.5)), 0.0, MAX_SMOKE)
+		else:
+			rotate_y(-event.relative.x * mouse_sensitivity)
+			camera.rotate_x(-event.relative.y * mouse_sensitivity)
+			camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-90), deg_to_rad(90))
+
+	if Input.is_action_just_pressed(\"ui_cancel\"):
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+
+func _physics_process(delta):
+	if not is_on_floor():
+		velocity.y -= gravity * delta
+
+	if Input.is_action_just_pressed(\"ui_accept\") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+
+	var input_dir = Input.get_axis(\"forward\", \"back\")
+	var direction = (transform.basis * Vector3(0, 0, input_dir)).normalized()
+	
+	if direction:
+		velocity.x = direction.x * SPEED
+		velocity.z = direction.z * SPEED
+	else:
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.z = move_toward(velocity.z, 0, SPEED)
+
+	_handle_hand_bob(delta)
+	
+	# --- Update the UI Progress Bar ---
+	if smoke_bar:
+		smoke_bar.value = smoke_meter
+
+	move_and_slide()
+
+func _handle_hand_bob(delta):
+	var horizontal_speed = Vector3(velocity.x, 0, velocity.z).length()
+	var is_moving = is_on_floor() and horizontal_speed > 0.1
+	
+	var current_freq = WALK_BOB_FREQ if is_moving else IDLE_BOB_FREQ
+	var current_amp = WALK_BOB_AMP if is_moving else IDLE_BOB_AMP
+	
+	bob_time += delta * current_freq
+	sprite_3d.position.y = default_sprite_pos.y + sin(bob_time) * current_amp
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_0g6dx"]
+
+[sub_resource type="GDScript" id="GDScript_0g6dx"]
+resource_name = "kamera e tipit"
+script/source = "extends Camera3D
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(_delta: float) -> void:
+	pass
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gb7wt"]
+bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iah2f"]
+bg_color = Color(1, 0.015686275, 0.28235295, 1)
+
+[node name="Node3D" type="Node3D" unique_id=995713450]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1367292360]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
+mesh = SubResource("PlaneMesh_7exjq")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D" unique_id=194213878]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D" unique_id=1896854998]
+shape = SubResource("WorldBoundaryShape3D_7exjq")
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=504771904 node_paths=PackedStringArray("smoke_bar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.021838903, 0, 9.373844)
+script = SubResource("GDScript_7exjq")
+smoke_bar = NodePath("../CanvasLayer/smoke_bar")
+default_texture = ExtResource("1_bkvvr")
+smoking_texture = ExtResource("2_xafag")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=1685091685]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3006277, 0)
+shape = SubResource("CapsuleShape3D_0g6dx")
+
+[node name="Camera3D" type="Camera3D" parent="CharacterBody3D" unique_id=2037490821]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7640715, 0)
+script = SubResource("GDScript_0g6dx")
+
+[node name="Sprite3D" type="Sprite3D" parent="CharacterBody3D/Camera3D" unique_id=1091200180]
+transform = Transform3D(0.008241261, -0.005664062, 0, 0.005664062, 0.008241261, 0, 0, 0, 0.01, 0.05, -0.03, -0.06)
+texture = ExtResource("1_bkvvr")
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=330449584]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8907738, 1.4844823, 3.2957144)
+texture = ExtResource("1_ufhrt")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Sprite3D" unique_id=57345512]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0002365, 0)
+
+[node name="Sprite3D2" type="Sprite3D" parent="." unique_id=821795877]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2024508, 1.4740624, 2.257811)
+texture = ExtResource("1_ufhrt")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Sprite3D2" unique_id=664020561]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0002365, 0)
+
+[node name="Sprite3D3" type="Sprite3D" parent="." unique_id=1397656612]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8430119, 1.4758401, -1.3668652)
+texture = ExtResource("1_ufhrt")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Sprite3D3" unique_id=1604135143]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0002365, 0)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=388340889]
+
+[node name="smoke_bar" type="ProgressBar" parent="CanvasLayer" unique_id=40235417]
+offset_right = 150.0
+offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_styles/background = SubResource("StyleBoxFlat_gb7wt")
+theme_override_styles/fill = SubResource("StyleBoxFlat_iah2f")
