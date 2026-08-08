@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://l8wjub1gt3b8" path="res://hand_sprite_cursor-Sheet-Sheet.png" id="1_y75xu"]
 [ext_resource type="Texture2D" uid="uid://dpdtssxxicym5" path="res://cigarette hand.png" id="2_xafag"]
+[ext_resource type="Shader" uid="uid://c1l1jdul7h0eq" path="res://tipi-drunk.gdshader" id="3_j3erc"]
 
 [sub_resource type="GDScript" id="GDScript_7exjq"]
 resource_name = "tipi"
@@ -109,13 +110,15 @@ func _handle_hand_bob(delta):
 resource_name = "kamera e tipit"
 script/source = "extends Camera3D
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
+@export var drunk_intensity: float = 0.7
+var time_passed: float = 0.0
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta: float) -> void:
-	pass
+func _process(delta: float) -> void:
+	time_passed += delta * drunk_intensity
+	
+	# Sway roll and tilt smoothly
+	rotation_degrees.z = sin(time_passed * 1.5) * 4.0 * drunk_intensity
+	rotation_degrees.x += cos(time_passed * 1.1) * 0.02 * drunk_intensity
 "
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gb7wt"]
@@ -123,6 +126,13 @@ bg_color = Color(1, 1, 1, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iah2f"]
 bg_color = Color(1, 0.015686275, 0.28235295, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7exjq"]
+shader = ExtResource("3_j3erc")
+shader_parameter/wave_speed = 2.0
+shader_parameter/wave_frequency = 5.0
+shader_parameter/wave_amplitude = 0.015
+shader_parameter/chromatic_aberration = 0.008
 
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=504771904 node_paths=PackedStringArray("smoke_bar")]
 script = SubResource("GDScript_7exjq")
@@ -152,5 +162,11 @@ theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_styles/background = SubResource("StyleBoxFlat_gb7wt")
 theme_override_styles/fill = SubResource("StyleBoxFlat_iah2f")
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1386118857]
+material = SubResource("ShaderMaterial_7exjq")
+offset_right = 1153.0
+offset_bottom = 649.0
+mouse_filter = 2
 
 [node name="Node3D" type="Node3D" parent="." unique_id=995713450]
