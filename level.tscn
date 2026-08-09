@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://b1fv0aqujjm3k" path="res://floor_block.tscn" id="1_vonw3"]
 [ext_resource type="Texture2D" uid="uid://dfbqv5ua0eotr" path="res://c58d078a-856c-4aed-9ff9-0bf536e245f2.jpg" id="3_oi3di"]
 [ext_resource type="PackedScene" uid="uid://dwycho4t12uio" path="res://ipit.tscn" id="4_0b4ue"]
+[ext_resource type="PackedScene" uid="uid://mpxqeo64o1c5" path="res://phone_ui.tscn" id="4_f2txt"]
 
 [sub_resource type="GDScript" id="GDScript_afelo"]
 script/source = "extends Node3D
@@ -191,6 +192,9 @@ offset_right = 105.0
 offset_bottom = 106.0
 theme_override_font_sizes/font_size = 46
 text = "???"
+
+[node name="PhoneUI" parent="." unique_id=833135230 node_paths=PackedStringArray("player") instance=ExtResource("4_f2txt")]
+player = NodePath("../CharacterBody3D")
 
 [node name="ipit" parent="." unique_id=543376239 instance=ExtResource("4_0b4ue")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0194471, -0.030465126, -22.09767)
