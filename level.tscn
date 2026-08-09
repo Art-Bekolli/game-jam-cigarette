@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://c1jqwc3ww7gf5" path="res://scenes/cig.tscn" id="4_n6hdu"]
 [ext_resource type="Script" uid="uid://b0wkjubvyov63" path="res://texture_rect.gd" id="5_8cye3"]
 [ext_resource type="Script" uid="uid://bjj83ct42pugh" path="res://randomi.gd" id="5_f2txt"]
+[ext_resource type="PackedScene" uid="uid://mpxqeo64o1c5" path="res://phone_ui.tscn" id="4_f2txt"]
 
 [sub_resource type="GDScript" id="GDScript_afelo"]
 script/source = "extends Node3D
@@ -345,6 +346,8 @@ layout_mode = 2
 
 [node name="cig" parent="DialogController2/UI/CigCounter" unique_id=1364372331 instance=ExtResource("4_n6hdu")]
 layout_mode = 2
+[node name="PhoneUI" parent="." unique_id=833135230 node_paths=PackedStringArray("player") instance=ExtResource("4_f2txt")]
+player = NodePath("../CharacterBody3D")
 
 [node name="ipit" parent="." unique_id=543376239 instance=ExtResource("4_0b4ue")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.38035607, -0.8572912, -22.090158)

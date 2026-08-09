@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://ww0l3g2c12mb"]
 
-[ext_resource type="Texture2D" uid="uid://l8wjub1gt3b8" path="res://hand_sprite_cursor-Sheet-Sheet.png" id="1_y75xu"]
-[ext_resource type="Texture2D" uid="uid://dpdtssxxicym5" path="res://cigarette hand.png" id="2_xafag"]
+[ext_resource type="Texture2D" uid="uid://jomoeraaogka" path="res://hand-new.png" id="1_j3erc"]
+[ext_resource type="Texture2D" uid="uid://ce7y8fpckake" path="res://smokinghand.png" id="2_j3erc"]
 [ext_resource type="Shader" uid="uid://c1l1jdul7h0eq" path="res://tipi-drunk.gdshader" id="3_j3erc"]
+[ext_resource type="AudioStream" uid="uid://oyiv0hgsici7" path="res://ambient maybe.wav" id="4_06o0c"]
+[ext_resource type="AudioStream" uid="uid://bjxti56qldeji" path="res://main loop.wav" id="5_k3erj"]
 
 [sub_resource type="GDScript" id="GDScript_7exjq"]
 resource_name = "tipi"
@@ -11,7 +13,8 @@ script/source = "extends CharacterBody3D
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
 var gravity = ProjectSettings.get_setting(\"physics/3d/default_gravity\")
-
+@onready var ambient_audio: AudioStreamPlayer = $Ambient
+@onready var main_theme: AudioStreamPlayer = $\"Main Theme\"
 # --- UI Variables ---
 @onready var smoke_bar: ProgressBar = %smoke_bar
 
@@ -25,35 +28,54 @@ var smoke_meter: float = 100.0
 const MAX_SMOKE = 100.0
 const DRAG_SENSITIVITY = 0.5
 const DECAY_RATE: float = 8.0
+var is_phone_talking: bool = false
 
-# Idle / Walk Bobbing
+# --- Drunk Tilt / Balance Mechanics ---
+var tilt_angle: float = 0.0            # Current roll angle in degrees (- Left, + Right)
+var tilt_target_dir: int = 0           # -1 = Falling Left, 1 = Falling Right, 0 = Upright
+var tilt_timer: float = 2.0            # Delay before next stumble
+const MAX_TILT: float = 45.0           # Maximum angle before player falls completely
+const TILT_FALL_SPEED: float = 12.0    # Degrees per second the camera tilts (slowly falls over)
+const MASH_RECOVERY: float = 3.0      # Degrees recovered per button tap
+var visual_tilt: float = 0.0           # The smoothed angle the camera actually renders
+const TILT_SMOOTHING: float = 12.0     # How fast the camera catches up (lower = floatier, higher = snappier)
+
+# --- Fail State Variables ---
+var is_failed: bool = false
+var fall_timer: float = 0.0
+const GROUND_EYE_HEIGHT: float = 0.3   # Height camera drops to when collapsed
+
+# Idle / Walk Bobbing & Ambient Sway
 const IDLE_BOB_FREQ = 2.0
 const IDLE_BOB_AMP = 0.002
 const WALK_BOB_FREQ = 10.0
 const WALK_BOB_AMP = 0.003
 var bob_time = 0.0
+var sway_time = 0.0
 
 @onready var camera = $Camera3D
 @onready var sprite_3d = $Camera3D/Sprite3D
 @onready var default_sprite_pos = sprite_3d.position
+@onready var default_camera_y = camera.position.y
 
 func _ready():
-	
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	
 	if smoke_bar:
 		smoke_bar.value = smoke_meter
-
+	ambient_audio.play()
+	main_theme.play()
 func _unhandled_input(event):
+	if is_failed:
+		return
+
+	# Smoking mouse controls
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		is_smoking = event.pressed
 		if is_smoking:
-			# Lock cursor in place while holding click
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 			if smoking_texture:
 				sprite_3d.texture = smoking_texture
 		else:
-			# Release cursor when left click is released
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 			if default_texture:
 				sprite_3d.texture = default_texture
@@ -62,18 +84,60 @@ func _unhandled_input(event):
 		if event.relative.y > 0:
 			smoke_meter = clamp(smoke_meter + (event.relative.y * (DRAG_SENSITIVITY * 0.005)), 0.0, MAX_SMOKE)
 
+	# --- Button Mashing to Upright Character ---
+	if tilt_target_dir != 0:
+		# If toppling LEFT (-1), tilt_angle is negative. Mash RIGHT to add positive recovery.
+		if tilt_target_dir == -1 and event.is_action_pressed(\"left\"):
+			tilt_angle += MASH_RECOVERY
+			if tilt_angle > 0: tilt_angle = 0 # Don't over-correct past center
+			
+		# If toppling RIGHT (1), tilt_angle is positive. Mash LEFT to subtract recovery.
+		elif tilt_target_dir == 1 and event.is_action_pressed(\"right\"):
+			tilt_angle -= MASH_RECOVERY
+			if tilt_angle < 0: tilt_angle = 0 # Don't over-correct past center
+
+		# If we successfully leveled out (back to 0)
+		if abs(tilt_angle) <= 0.5:
+			tilt_angle = 0.0
+			tilt_target_dir = 0
+			tilt_timer = randf_range(2.0, 5.0) # Set timer for the next random topple
+
 	if Input.is_action_just_pressed(\"ui_cancel\"):
 		get_tree().quit()
 
 func _physics_process(delta):
-		smoke_meter = max(smoke_meter - (DECAY_RATE * delta), 0.0)
+	# --- Handle Fail State Collapse Animation ---
+	if is_failed:
+		velocity.x = 0
+		velocity.z = 0
+		
+		# Drop camera down to floor height and roll sideways
+		camera.position.y = move_toward(camera.position.y, GROUND_EYE_HEIGHT, delta * 3.0)
+		camera.rotation_degrees.z = move_toward(camera.rotation_degrees.z, sign(tilt_angle) * 75.0, delta * 120.0)
+		camera.rotation_degrees.x = move_toward(camera.rotation_degrees.x, -15.0, delta * 60.0)
+		
+		# Restart level after being on the floor for 2 seconds
+		fall_timer += delta
+		if fall_timer >= 2.0:
+			get_tree().reload_current_scene()
+			
+		move_and_slide()
+		return
 
-		if not is_on_floor():
-			velocity.y -= gravity * delta
+	# --- Normal Game Loop ---
+	# If on the phone, multiply the decay rate by 3 (adjust as needed)
+	var current_decay = DECAY_RATE * 2.0 if is_phone_talking else DECAY_RATE
+	smoke_meter = max(smoke_meter - (current_decay * delta), 0.0)
 
-		if Input.is_action_just_pressed(\"ui_accept\") and is_on_floor():
-			velocity.y = JUMP_VELOCITY
+	if not is_on_floor():
+		velocity.y -= gravity * delta
 
+	if Input.is_action_just_pressed(\"ui_accept\") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+
+	_process_drunk_tilt(delta)
+
+	if Global.playerCanMove: 
 		var input_dir = Input.get_axis(\"forward\", \"back\")
 		var direction = (transform.basis * Vector3(0, 0, input_dir)).normalized()
 		
@@ -92,10 +156,32 @@ func _physics_process(delta):
 			
 			
 
-		if smoke_meter <= 0.0:
-			get_tree().quit()
+	_handle_hand_bob(delta)
+	_handle_camera_tilt_and_sway(delta)
 
-		move_and_slide()
+	if smoke_bar:
+		smoke_bar.value = smoke_meter
+
+	# Fail condition if smoke runs out
+	if smoke_meter <= 0.0:
+		is_failed = true
+
+	move_and_slide()
+
+func _process_drunk_tilt(delta: float):
+	if tilt_target_dir == 0:
+		# Wait for timer to trigger next random topple direction
+		tilt_timer -= delta
+		if tilt_timer <= 0.0:
+			tilt_target_dir = -1 if randf() < 0.5 else 1
+	else:
+		# Slowly pull character over until player mashes key
+		tilt_angle += tilt_target_dir * TILT_FALL_SPEED * delta
+		tilt_angle = clamp(tilt_angle, -MAX_TILT, MAX_TILT)
+		
+		# Check if player failed to mash in time and hit max tilt (45 degrees)
+		if abs(tilt_angle) >= MAX_TILT:
+			is_failed = true
 
 func _handle_hand_bob(delta):
 	var horizontal_speed = Vector3(velocity.x, 0, velocity.z).length()
@@ -106,24 +192,22 @@ func _handle_hand_bob(delta):
 	
 	bob_time += delta * current_freq
 	sprite_3d.position.y = default_sprite_pos.y + sin(bob_time) * current_amp
+
+func _handle_camera_tilt_and_sway(delta):
+	# 1. Smoothly glide the visual_tilt toward the actual mechanical tilt_angle
+	visual_tilt = lerp(visual_tilt, tilt_angle, delta * TILT_SMOOTHING)
+
+	# 2. Calculate ambient drunk wobble
+	sway_time += delta * 0.7
+	var ambient_sway = sin(sway_time * 1.5) * 2.0
+	var ambient_pitch = cos(sway_time * 1.1) * 1.5
+	
+	# 3. Apply the smoothed visual_tilt instead of the raw, snappy tilt_angle
+	camera.rotation_degrees.z = visual_tilt + ambient_sway
+	camera.rotation_degrees.x = ambient_pitch
 "
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_0g6dx"]
-
-[sub_resource type="GDScript" id="GDScript_0g6dx"]
-resource_name = "kamera e tipit"
-script/source = "extends Camera3D
-
-@export var drunk_intensity: float = 0.7
-var time_passed: float = 0.0
-
-func _process(delta: float) -> void:
-	time_passed += delta * drunk_intensity
-	
-	# Sway roll and tilt smoothly
-	rotation_degrees.z = sin(time_passed * 1.5) * 4.0 * drunk_intensity
-	rotation_degrees.x += cos(time_passed * 1.1) * 0.02 * drunk_intensity
-"
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gb7wt"]
 bg_color = Color(1, 1, 1, 1)
@@ -140,8 +224,8 @@ shader_parameter/chromatic_aberration = 0.008
 
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=504771904]
 script = SubResource("GDScript_7exjq")
-default_texture = ExtResource("1_y75xu")
-smoking_texture = ExtResource("2_xafag")
+default_texture = ExtResource("1_j3erc")
+smoking_texture = ExtResource("2_j3erc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1685091685]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3006277, 0)
@@ -149,12 +233,11 @@ shape = SubResource("CapsuleShape3D_0g6dx")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=2037490821]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7640715, 0)
-script = SubResource("GDScript_0g6dx")
 
 [node name="Sprite3D" type="Sprite3D" parent="Camera3D" unique_id=1091200180]
 transform = Transform3D(0.039416313, -0.0068083797, 0, 0.0068083797, 0.039416313, 0, 0, 0, 0.04, 0.05, -0.03, -0.06)
 texture_filter = 0
-texture = ExtResource("1_y75xu")
+texture = ExtResource("1_j3erc")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=388340889]
 
@@ -174,3 +257,10 @@ offset_bottom = 649.0
 mouse_filter = 2
 
 [node name="Node3D" type="Node3D" parent="." unique_id=995713450]
+
+[node name="Ambient" type="AudioStreamPlayer" parent="." unique_id=199750959]
+stream = ExtResource("4_06o0c")
+autoplay = true
+
+[node name="Main Theme" type="AudioStreamPlayer" parent="." unique_id=1925176534]
+stream = ExtResource("5_k3erj")

@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://dtngdxshnn3u4"]
+
+[ext_resource type="Script" uid="uid://cbpb3dl7p6304" path="res://rich_text_label.gd" id="1_fi810"]
+[ext_resource type="AudioStream" uid="uid://dllwuiwppny7s" path="res://Intro.wav" id="2_53opv"]
+
+[sub_resource type="SystemFont" id="SystemFont_2wany"]
+font_italic = true
+hinting = 2
+
+[node name="Control" type="Control" unique_id=1240687661]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=2048467710]
+layout_mode = 0
+offset_left = -3.0
+offset_top = 1.0
+offset_right = 1157.0
+offset_bottom = 661.0
+color = Color(0.03137255, 0.03137255, 0.03137255, 1)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="." unique_id=1045513283]
+layout_mode = 0
+offset_left = 176.0
+offset_top = 79.0
+offset_right = 1002.0
+offset_bottom = 543.0
+theme_override_colors/default_color = Color(0.23529412, 0.5529412, 1, 1)
+theme_override_fonts/normal_font = SubResource("SystemFont_2wany")
+theme_override_font_sizes/normal_font_size = 20
+bbcode_enabled = true
+text = "You've been out partying all night. It's been fun, it's been long, you only live once, right?
+
+...
+
+Oh no...
+
+
+You've ran out of cigarettes. And worse than that, you've been chosen to go get more. 
+
+And so, armed with the last few cigs from the party, you venture out into the night. 
+
+. . . Be Wary Of Strangers . . . "
+script = ExtResource("1_fi810")
+
+[node name="Intro" type="AudioStreamPlayer" parent="." unique_id=2106167657]
+stream = ExtResource("2_53opv")

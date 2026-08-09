@@ -1,0 +1,204 @@
+[gd_scene format=3 uid="uid://mpxqeo64o1c5"]
+
+[ext_resource type="Texture2D" uid="uid://cmd6im1ytktni" path="res://telephon.png" id="1_s8j8e"]
+[ext_resource type="AudioStream" uid="uid://cba0rdrhc5yxw" path="res://mixkit-urgent-simple-tone-loop-2976.wav" id="2_htsmd"]
+[ext_resource type="AudioStream" uid="uid://bd2bxtwsmwkdh" path="res://freesound_community-foley-radio-gibberish-33601.mp3" id="3_1hd08"]
+
+[sub_resource type="GDScript" id="GDScript_mqlib"]
+script/source = "extends CanvasLayer
+
+# Link these in the Inspector!
+@export var player: CharacterBody3D
+@export var phone_sprite: Node2D # Works for Sprite2D or AnimatedSprite2D
+
+@onready var ring_audio = $AnimatedSprite2D/RingAudio
+@onready var talk_audio = $AnimatedSprite2D/TalkAudio
+
+var is_ringing: bool = false
+var is_talking: bool = false
+
+# Sliding positions (Adjust these pixel coordinates based on your game window)
+var off_screen_pos = Vector2(-250, 400) 
+var on_screen_pos = Vector2(100, 400)
+
+# Create timers in code
+var call_timer = Timer.new()
+var ring_timer = Timer.new()
+var talk_timer = Timer.new()
+
+func _ready():
+	# Setup Timers
+	add_child(call_timer)
+	add_child(ring_timer)
+	add_child(talk_timer)
+	
+	call_timer.one_shot = true
+	ring_timer.one_shot = true
+	talk_timer.one_shot = true
+	
+	call_timer.timeout.connect(_on_call_timer_timeout)
+	ring_timer.timeout.connect(_on_ring_timer_timeout)
+	talk_timer.timeout.connect(_on_talk_timer_timeout)
+	
+	# Start with the phone hidden off-screen
+	if phone_sprite:
+		phone_sprite.position = off_screen_pos
+		
+	start_next_call_countdown()
+
+func _process(delta: float):
+	if !phone_sprite:
+		return
+		
+	# Smoothly slide the phone sprite on and off the screen
+	var target_pos = on_screen_pos if (is_ringing or is_talking) else off_screen_pos
+	phone_sprite.position = phone_sprite.position.lerp(target_pos, delta * 8.0)
+
+func _unhandled_input(event):
+	# If the phone is ringing and the player presses 'E'
+	if is_ringing and event.is_action_pressed(\"decline_call\"):
+		decline_call()
+
+func start_next_call_countdown():
+	# Random time before friends call again
+	call_timer.start(randf_range(10.0, 20.0))
+
+func _on_call_timer_timeout():
+	is_ringing = true
+	ring_audio.play() # Start the ringing sound
+	ring_timer.start(3.0) # Player has 3 seconds to press E
+
+func decline_call():
+	is_ringing = false
+	ring_timer.stop()
+	ring_audio.stop() # Cut the ringing sound short
+	start_next_call_countdown()
+
+func _on_ring_timer_timeout():
+	# Player failed to press E -> Auto-answer
+	is_ringing = false
+	ring_audio.stop()
+	
+	is_talking = true
+	talk_audio.play() # Start talking sound
+	
+	# Drain nicotine faster
+	if player:
+		player.is_phone_talking = true
+		
+	talk_timer.start(8.0) # Friends stay on the line for 8 seconds
+
+func _on_talk_timer_timeout():
+	# Friends hang up -> Phone slides away
+	is_talking = false
+	talk_audio.stop()
+	
+	if player:
+		player.is_phone_talking = false
+		
+	start_next_call_countdown()
+"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_11aml"]
+atlas = ExtResource("1_s8j8e")
+region = Rect2(0, 0, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_htsmd"]
+atlas = ExtResource("1_s8j8e")
+region = Rect2(150, 0, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1hd08"]
+atlas = ExtResource("1_s8j8e")
+region = Rect2(300, 0, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_plqq2"]
+atlas = ExtResource("1_s8j8e")
+region = Rect2(450, 0, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b1cpo"]
+atlas = ExtResource("1_s8j8e")
+region = Rect2(0, 150, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ulwjg"]
+atlas = ExtResource("1_s8j8e")
+region = Rect2(150, 150, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mbpcl"]
+atlas = ExtResource("1_s8j8e")
+region = Rect2(300, 150, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1orqc"]
+atlas = ExtResource("1_s8j8e")
+region = Rect2(450, 150, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_im0xb"]
+atlas = ExtResource("1_s8j8e")
+region = Rect2(0, 300, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_djuk7"]
+atlas = ExtResource("1_s8j8e")
+region = Rect2(150, 300, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2pt7s"]
+atlas = ExtResource("1_s8j8e")
+region = Rect2(300, 300, 150, 150)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_0g6dx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_11aml")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_htsmd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1hd08")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_plqq2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b1cpo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ulwjg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mbpcl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1orqc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_im0xb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_djuk7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2pt7s")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="PhoneUI" type="CanvasLayer" unique_id=833135230 node_paths=PackedStringArray("phone_sprite")]
+script = SubResource("GDScript_mqlib")
+phone_sprite = NodePath("AnimatedSprite2D")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=251003777]
+texture_filter = 1
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_0g6dx")
+autoplay = "default"
+frame_progress = 0.82323945
+
+[node name="RingAudio" type="AudioStreamPlayer" parent="AnimatedSprite2D" unique_id=1372255427]
+stream = ExtResource("2_htsmd")
+
+[node name="TalkAudio" type="AudioStreamPlayer" parent="AnimatedSprite2D" unique_id=1640151768]
+stream = ExtResource("3_1hd08")
+
+[node name="Node3D" type="Node3D" parent="." unique_id=1074876933]

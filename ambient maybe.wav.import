@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://oyiv0hgsici7"
+path="res://.godot/imported/ambient maybe.wav-4f07274274755b104af7940c08f6b9ee.sample"
+
+[deps]
+
+source_file="res://ambient maybe.wav"
+dest_files=["res://.godot/imported/ambient maybe.wav-4f07274274755b104af7940c08f6b9ee.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2
