@@ -3,10 +3,13 @@
 [ext_resource type="PackedScene" uid="uid://ww0l3g2c12mb" path="res://tipi.tscn" id="1_u52ul"]
 [ext_resource type="PackedScene" uid="uid://b1fv0aqujjm3k" path="res://floor_block.tscn" id="1_vonw3"]
 [ext_resource type="Texture2D" uid="uid://dfbqv5ua0eotr" path="res://c58d078a-856c-4aed-9ff9-0bf536e245f2.jpg" id="3_oi3di"]
+[ext_resource type="PackedScene" uid="uid://dwycho4t12uio" path="res://ipit.tscn" id="4_0b4ue"]
 
 [sub_resource type="GDScript" id="GDScript_afelo"]
 script/source = "extends Node3D
 
+const IPIT = preload(\"uid://dwycho4t12uio\")
+@onready var ipit: StaticBody3D = $ipit 
 @export var floor_block_scene: PackedScene
 @export var player: Node3D
 
@@ -16,6 +19,10 @@ const BLOCK_SIZE = 4.0
 const VISIBLE_DISTANCE = 24.0 # 6 blocks * 4.0 size = 24 meters
 
 var spawned_blocks: Array[Node3D] = []
+var min_time: float = 1.0
+var max_time: float = 2.0
+
+
 
 func _ready():
 	if not floor_block_scene:
@@ -38,6 +45,21 @@ func _process(_delta):
 		
 		# Show if within range
 		block.visible = dist <= VISIBLE_DISTANCE
+		
+
+
+func _spawn_enemy_3d() -> void:
+	await get_tree().create_timer(randf_range(min_time, max_time)).timeout
+	var new_enemy = IPIT.instantiate()
+	
+	var random_x = randf_range(0, 0)
+	var random_z = randf_range(-30.0, -80.0) 
+	var spawn_position = Vector3(random_x, 0.0, random_z)
+	
+	new_enemy.global_position = spawn_position
+	add_child(new_enemy)
+	
+	new_enemy.chance =+ .05
 "
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_mqlib"]
@@ -51,6 +73,38 @@ background_mode = 2
 sky = SubResource("Sky_0g6dx")
 sky_rotation = Vector3(0, -2.459169, 0)
 
+[sub_resource type="GDScript" id="GDScript_f2txt"]
+script/source = "extends CanvasLayer
+
+@onready var dialogiyesno: Control = $dialogiyesno
+@onready var main: Node3D = $\"..\"
+
+
+
+var isVisible = false 
+
+
+
+func ChangeVisibilityState(state):
+	dialogiyesno.visible = state
+
+func onAnswer() -> void:
+	Global.currentIpit.queue_free()
+	ChangeVisibilityState(false)
+	Global.playerCanMove = true
+	main._spawn_enemy_3d()
+
+
+
+
+func _on_no_pressed() -> void:
+	onAnswer()
+
+
+func _on_yes_pressed() -> void:
+	onAnswer()
+"
+
 [node name="Level" type="Node3D" unique_id=181682921 node_paths=PackedStringArray("player")]
 script = SubResource("GDScript_afelo")
 floor_block_scene = ExtResource("1_vonw3")
@@ -60,3 +114,86 @@ player = NodePath("CharacterBody3D")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=123971115]
 environment = SubResource("Environment_7exjq")
+
+[node name="DialogController2" type="CanvasLayer" parent="." unique_id=1759700172]
+script = SubResource("GDScript_f2txt")
+
+[node name="dialogiyesno" type="Control" parent="DialogController2" unique_id=942243043]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="DialogController2/dialogiyesno" unique_id=2020335210]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -332.0
+offset_top = -256.76
+offset_right = 332.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="No" type="Button" parent="DialogController2/dialogiyesno/Panel" unique_id=1018164932]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -55.0
+offset_top = -42.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "No
+"
+
+[node name="Yes" type="Button" parent="DialogController2/dialogiyesno/Panel" unique_id=362831403]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 609.0
+offset_top = -82.0
+offset_right = 664.0
+offset_bottom = -40.0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "Yes"
+
+[node name="Label" type="Label" parent="DialogController2/dialogiyesno/Panel" unique_id=1184616847]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -330.0
+offset_top = -30.619995
+offset_right = 243.0
+offset_bottom = 32.380005
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 45
+text = "Can i ask you something?"
+
+[node name="Label2" type="Label" parent="DialogController2/dialogiyesno/Panel" unique_id=1718179595]
+layout_mode = 1
+offset_right = 105.0
+offset_bottom = 106.0
+theme_override_font_sizes/font_size = 46
+text = "???"
+
+[node name="ipit" parent="." unique_id=543376239 instance=ExtResource("4_0b4ue")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0339861, -0.030465126, -22.110924)
+
+[connection signal="pressed" from="DialogController2/dialogiyesno/Panel/No" to="DialogController2" method="_on_no_pressed"]
+[connection signal="pressed" from="DialogController2/dialogiyesno/Panel/Yes" to="DialogController2" method="_on_yes_pressed"]

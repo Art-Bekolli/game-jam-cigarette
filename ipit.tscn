@@ -3,12 +3,13 @@
 [sub_resource type="GDScript" id="GDScript_jmh37"]
 script/source = "extends StaticBody3D
 
-@onready var dialog_controller: CanvasLayer = $\"../DialogController\"
+@onready var dialog_controller: CanvasLayer = $\"../DialogController2\"
+
 
 var chance : float = 0.2
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
-	if body.name == \"tipi\":
+	if body.name == \"CharacterBody3D\":
 		Global.playerCanMove = false
 		Global.currentIpit = self
 		dialog_controller.ChangeVisibilityState(true)
@@ -19,10 +20,6 @@ size = Vector3(7.7038116, 1, 7.8476563)
 
 [sub_resource type="GDScript" id="GDScript_ndypg"]
 script/source = "extends CollisionShape3D
-
-@onready var dialogiyesno: Control = $\"CanvasLayer/dialogiyesno\"
-
-
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

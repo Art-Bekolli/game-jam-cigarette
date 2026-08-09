@@ -12,7 +12,7 @@ const IPIT = preload(\"uid://dwycho4t12uio\")
 
 
 var min_time: float = 1.0
-var max_time: float = 2.0
+var max_time: float = 50.0
 
 func _spawn_enemy_3d() -> void:
 	await get_tree().create_timer(randf_range(min_time, max_time)).timeout
@@ -31,11 +31,9 @@ func _spawn_enemy_3d() -> void:
 [sub_resource type="GDScript" id="GDScript_edtrs"]
 script/source = "extends CharacterBody3D
 
-@onready var dialogiyesno: Control = %dialogiyesno
-@onready var yes: Button = $\"../CanvasLayer/dialogiyesno/Panel2/yes\"
-@onready var no: Button = $\"../CanvasLayer/dialogiyesno/Panel2/no\"
+
 @onready var ipit: StaticBody3D = $\"../ipit\"
-@onready var dialog_controller: CanvasLayer = $\"../DialogController\"
+@onready var dialog_controller: CanvasLayer = $\"../DialogController3\"
 
 
 
@@ -113,38 +111,6 @@ func _on_yes_pressed() -> void:
 	onAnswer()
 "
 
-[sub_resource type="GDScript" id="GDScript_dcxhc"]
-script/source = "extends Node3D
-
-@onready var dialog_controller: CanvasLayer = $\"../DialogController\"
-
-const IPIT = preload(\"uid://dwycho4t12uio\")
-@onready var main: Node3D = $\"..\"
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
-
-	
-		
-		
-
-
-func _on_yes_pressed() -> void:
-	pass # Replace with function body.
-
-
-func _on_no_pressed() -> void:
-	pass # Replace with function body.
-"
-
 [node name="Main" type="Node3D" unique_id=433764472]
 script = SubResource("GDScript_glnct")
 
@@ -176,10 +142,10 @@ light_energy = 2.901
 [node name="ipit" parent="." unique_id=543376239 instance=ExtResource("1_ufhrt")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.97925, -22.110924)
 
-[node name="DialogController" type="CanvasLayer" parent="." unique_id=1019929596]
+[node name="DialogController3" type="CanvasLayer" parent="." unique_id=1019929596]
 script = SubResource("GDScript_ufhrt")
 
-[node name="dialogiyesno" type="Control" parent="DialogController" unique_id=140057889]
+[node name="dialogiyesno" type="Control" parent="DialogController3" unique_id=140057889]
 visible = false
 layout_mode = 3
 anchors_preset = 15
@@ -188,7 +154,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="Panel" parent="DialogController/dialogiyesno" unique_id=2061931650]
+[node name="Panel" type="Panel" parent="DialogController3/dialogiyesno" unique_id=2061931650]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -202,7 +168,7 @@ offset_bottom = -64.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="No" type="Button" parent="DialogController/dialogiyesno/Panel" unique_id=450854445]
+[node name="No" type="Button" parent="DialogController3/dialogiyesno/Panel" unique_id=450854445]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -217,7 +183,7 @@ theme_override_font_sizes/font_size = 24
 text = "No
 "
 
-[node name="Yes" type="Button" parent="DialogController/dialogiyesno/Panel" unique_id=1167892131]
+[node name="Yes" type="Button" parent="DialogController3/dialogiyesno/Panel" unique_id=1167892131]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
@@ -230,7 +196,7 @@ grow_vertical = 0
 theme_override_font_sizes/font_size = 24
 text = "Yes"
 
-[node name="Label" type="Label" parent="DialogController/dialogiyesno/Panel" unique_id=1732962931]
+[node name="Label" type="Label" parent="DialogController3/dialogiyesno/Panel" unique_id=1732962931]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -246,15 +212,12 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 45
 text = "Can i ask you something?"
 
-[node name="Label2" type="Label" parent="DialogController/dialogiyesno/Panel" unique_id=439511013]
+[node name="Label2" type="Label" parent="DialogController3/dialogiyesno/Panel" unique_id=439511013]
 layout_mode = 1
 offset_right = 105.0
 offset_bottom = 106.0
 theme_override_font_sizes/font_size = 46
 text = "???"
 
-[node name="ByeTipi" type="Node3D" parent="." unique_id=1790682727]
-script = SubResource("GDScript_dcxhc")
-
-[connection signal="pressed" from="DialogController/dialogiyesno/Panel/No" to="DialogController" method="_on_no_pressed"]
-[connection signal="pressed" from="DialogController/dialogiyesno/Panel/Yes" to="DialogController" method="_on_yes_pressed"]
+[connection signal="pressed" from="DialogController3/dialogiyesno/Panel/No" to="DialogController3" method="_on_no_pressed"]
+[connection signal="pressed" from="DialogController3/dialogiyesno/Panel/Yes" to="DialogController3" method="_on_yes_pressed"]
