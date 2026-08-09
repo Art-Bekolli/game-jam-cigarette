@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://vlvkv7862g27"]
+
+[ext_resource type="Texture2D" uid="uid://d4mlyetouhb0l" path="res://game-over-export.png" id="1_y26ei"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_5fit5"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_0g6dx"]
+
+[sub_resource type="GDScript" id="GDScript_7exjq"]
+script/source = "extends Button
+
+# Drag your main level scene file here in the Inspector, or type its path
+@export_file(\"*.tscn\") var level_scene_path: String = \"res://level.tscn\"
+
+func _pressed() -> void:
+	# Re-enable player movement if you use a global state flag
+	if \"playerCanMove\" in Global:
+		Global.playerCanMove = true
+		
+	# Load the main game level back up
+	get_tree().change_scene_to_file(level_scene_path)
+"
+
+[node name="Game_over" type="Node2D" unique_id=666988157]
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="." unique_id=714220612]
+modulate = Color(0.06469653, 0.06469653, 0.06469653, 1)
+position = Vector2(576, 324)
+scale = Vector2(1152, 648)
+mesh = SubResource("QuadMesh_5fit5")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="MeshInstance2D" unique_id=1185511409]
+physics_material_override = SubResource("PhysicsMaterial_0g6dx")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=4351165]
+position = Vector2(577, 325.00003)
+scale = Vector2(1.6639999, 1.6640002)
+texture = ExtResource("1_y26ei")
+
+[node name="Button" type="Button" parent="." unique_id=2040230722]
+offset_left = 538.0
+offset_top = 518.0
+offset_right = 619.0
+offset_bottom = 549.0
+text = "Try Again"
+script = SubResource("GDScript_7exjq")

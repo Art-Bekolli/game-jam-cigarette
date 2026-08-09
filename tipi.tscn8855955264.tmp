@@ -120,7 +120,7 @@ func _physics_process(delta):
 			
 		# Transition to Game Over scene after collapse animation finishes (2 seconds)
 		fall_timer += delta
-	
+		if fall_timer >= 2.0:
 			# Restore mouse cursor visibility for the 2D Game Over UI
 
 		move_and_slide()
