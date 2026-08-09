@@ -5,12 +5,15 @@
 [ext_resource type="Texture2D" uid="uid://dfbqv5ua0eotr" path="res://c58d078a-856c-4aed-9ff9-0bf536e245f2.jpg" id="3_oi3di"]
 [ext_resource type="PackedScene" uid="uid://dwycho4t12uio" path="res://ipit.tscn" id="4_0b4ue"]
 [ext_resource type="PackedScene" uid="uid://mpxqeo64o1c5" path="res://phone_ui.tscn" id="4_f2txt"]
+[ext_resource type="Texture2D" uid="uid://dgqfpyimt2xv8" path="res://Shokat/evil_bob_hand.png" id="4_h6smj"]
 [ext_resource type="Texture2D" uid="uid://bv5wdhmwe8r5a" path="res://Shokat/anime-girl-cigs.png" id="4_i2t4f"]
 [ext_resource type="Texture2D" uid="uid://x8kmkn3x27g0" path="res://scenes/textbox.png" id="4_km5ld"]
 [ext_resource type="PackedScene" uid="uid://c1jqwc3ww7gf5" path="res://scenes/cig.tscn" id="4_n6hdu"]
 [ext_resource type="Script" uid="uid://b0wkjubvyov63" path="res://texture_rect.gd" id="5_8cye3"]
 [ext_resource type="Script" uid="uid://bjj83ct42pugh" path="res://randomi.gd" id="5_f2txt"]
+[ext_resource type="Texture2D" uid="uid://vvik2b0gn7pp" path="res://Shokat/angk_hand.png" id="6_v5j5c"]
 [ext_resource type="Texture2D" uid="uid://c1fxufruhwtyk" path="res://cigarette_box_sprite-Sheet.png" id="8_2orkt"]
+[ext_resource type="Texture2D" uid="uid://br4y2xgiepour" path="res://Shokat/good_bob_cigs.png" id="9_5pxul"]
 
 [sub_resource type="GDScript" id="GDScript_afelo"]
 script/source = "extends Node3D
@@ -90,11 +93,62 @@ script/source = "extends CanvasLayer
 @onready var main: Node3D = $\"..\"
 @onready var sprite_chance: Node3D = $\"../SpriteChance\"
 @onready var cig_counter: HBoxContainer = %CigCounter
+@onready var dora_maci: TextureRect = $UI/DoraMaci
+@onready var give: Label = $UI/DialogiBad/Give
+@onready var take: Label = $UI/DialogiGood/Take
+@onready var dora_keqi: TextureRect = $UI/DoraKeqi
+@onready var dora_angk: TextureRect = $UI/DoraAngk
+@onready var dora_bobi: TextureRect = $UI/DoraBobi
 @onready var animated_sprite_3d_2: AnimatedSprite3D = $AnimatedSprite3D2
 
 @onready var reload: AnimatedSprite2D = %reload
 
 const CIG = preload(\"uid://c1jqwc3ww7gf5\")
+
+var mir2:Array[String] = [
+\"Hey, long time no see!\",
+\"Only ten miles to heaven.\",
+\"Here, have a cigarette from me, I hope you get there. Don’t mention it.\",
+\"Here, have a cig!\",
+\"Have a cig!\",
+\"Kiss me!\",
+\"You’re beautiful.\",
+\"You want a ciggy?\",
+\"Hold on. Hang on. Hang on.\",
+\"Have a cig.\"
+]
+
+var mir1:Array[String] = [
+\"What’s woung with youw face? You’we aaaall messed up.\",
+\"Uhhh have this I found it on the ground. Weiwdo\",
+\"You dwopped something, no wait, its mine, you can have it anyway!\",
+\"Shhh, don’t tell anywone I gave you this. Hehehehe.\",
+\"Is it stiwww night? Gosh! Fees wike it’s been night fowevew. Anyway! Here!\",
+\"I found a whole box of these once next to my dad’s gun, you can have one!\",
+\"Evewybody’s inside, ya know?! Anyway, I dunno, here!\"
+]
+
+
+var keqi1:Array[String] = [
+\"Nevermind all that!\",
+\". . . I know you have  one, give it here.\",
+\"Hand over a cigarette, buddy.\",
+\"Pass a cig.\",
+\"I offer you hope!\",
+\"Give me a ciggy as payment.\"
+]
+
+var keqi2:Array[String] = [
+\"Humanity needs beauty\",
+\"Humanity needs symbolism.\",
+\"Criminal scum.\",
+\"Holy Child, Hanging High.\",
+\"Godless bastard, give me all you have!\",
+\"Stop right there, you apostle of heresy.\",
+\"Good Friday.\",
+\"Everyone’s sinned by the time I get to them.\",
+\"Pay in blood.\"
+]
 
 
 const MIRI_SHUME = preload(\"uid://cgyqlpbhrjmk4\")
@@ -111,7 +165,7 @@ func ChangeVisibilityState(state):
 
 func onAnswer() -> void:
 	ChangeVisibilityState(false)
-	await get_tree().create_timer(1.5).timeout
+	await get_tree().create_timer(2.5).timeout
 	Global.currentIpit.queue_free()
 	Global.playerCanMove = true
 	main._spawn_enemy_3d()
@@ -126,50 +180,70 @@ func _on_yes_pressed() -> void:
 		0:
 			gotCigi(2)
 			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = MIRI_SHUME
-
+			take.text = mir1[randi_range(0,mir1.size() - 1)]
+			
 			dialogi_good.visible = true
-			await get_tree().create_timer(1.5).timeout
+			await get_tree().create_timer(.3).timeout
+			dora_maci.visible = true
+			await get_tree().create_timer(2.2).timeout
 			dialogi_good.visible = false
+			dora_maci.visible = false
 			
 		1:
 			gotCigi(1)
 			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = MIRI
-
+			take.text = mir2[randi_range(0,mir2.size() - 1)]
 			dialogi_good.visible = true
-			await get_tree().create_timer(1.5).timeout
+			await get_tree().create_timer(.3).timeout
+			dora_bobi.visible = true
+			await get_tree().create_timer(2.2).timeout
 			dialogi_good.visible = false
+			dora_bobi.visible = false
 		2:
-			byeCigi(3)
+			byeCigi(1)
 			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = KEQI
-
+			give.text = keqi1[randi_range(0,keqi1.size() - 1)]
 			dialogi_bad.visible = true
-			await get_tree().create_timer(1.5).timeout
+			await get_tree().create_timer(.3).timeout
+			dora_keqi.visible = true
+			await get_tree().create_timer(2.2).timeout
 			dialogi_bad.visible = false
+			dora_keqi.visible = false
 		3:
 			byeCigi(2)
 			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = KEQISHUME
-
+			
+			give.text = keqi2[randi_range(0,keqi2.size() - 1)]
 			dialogi_bad.visible = true
-			await get_tree().create_timer(1.5).timeout
+			await get_tree().create_timer(.3).timeout
+			dora_angk.visible = true
+			await get_tree().create_timer(2.2).timeout
 			dialogi_bad.visible = false
+			dora_angk.visible = false
 		
 
 func gotCigi(ncigi:int):
 	for n in ncigi:
+		reload.visible = true
 		reload.play_backwards(\"relad\")
 		var cigarja = CIG.instantiate()
 		cig_counter.add_child(cigarja)
+		await get_tree().create_timer(1.5).timeout
+		reload.visible = false
 		
 
 func byeCigi(ncigi:int):
 	
 	for n in ncigi:
+		reload.visible = true
 		reload.play(\"relad\")
 		if cig_counter.get_child(0) == null:
 			gameover.visible = true
 			return
 		cig_counter.get_child(0).queue_free()
-			
+		await get_tree().create_timer(1.5).timeout
+		reload.visible = false
+		
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_aicyk"]
@@ -298,6 +372,36 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 
+[node name="DoraBobi" type="TextureRect" parent="DialogController2/UI" unique_id=419675170]
+visible = false
+z_index = -1
+layout_mode = 0
+offset_left = 311.0
+offset_top = 293.0
+offset_right = 549.0001
+offset_bottom = 514.99976
+texture = ExtResource("9_5pxul")
+script = ExtResource("5_8cye3")
+
+[node name="DoraKeqi" type="TextureRect" parent="DialogController2/UI" unique_id=1632521306]
+visible = false
+layout_mode = 0
+offset_left = 310.0
+offset_top = 293.0
+offset_right = 548.0001
+offset_bottom = 514.99976
+texture = ExtResource("4_h6smj")
+script = ExtResource("5_8cye3")
+
+[node name="DoraAngk" type="TextureRect" parent="DialogController2/UI" unique_id=621765715]
+visible = false
+layout_mode = 0
+offset_left = 352.0
+offset_top = 281.0
+offset_right = 502.0
+offset_bottom = 431.0
+texture = ExtResource("6_v5j5c")
+
 [node name="DialogiBad" type="Control" parent="DialogController2/UI" unique_id=204823836]
 visible = false
 anchors_preset = 0
@@ -379,23 +483,6 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 45
 text = "Take a migi!"
-
-[node name="DoraLevizje" type="Control" parent="DialogController2/UI" unique_id=1522482954]
-visible = false
-anchors_preset = 0
-offset_left = 6.0
-offset_top = 412.0
-offset_right = 1141.0
-offset_bottom = 646.0
-
-[node name="TextureRect" type="TextureRect" parent="DialogController2/UI/DoraLevizje" unique_id=2061615963]
-layout_mode = 0
-offset_left = 286.0
-offset_top = 12.0
-offset_right = 524.0
-offset_bottom = 234.0
-texture = ExtResource("4_i2t4f")
-script = ExtResource("5_8cye3")
 
 [node name="dialogiyesno" type="Control" parent="DialogController2/UI" unique_id=140057889]
 unique_name_in_owner = true
@@ -488,6 +575,17 @@ offset_bottom = 49.0
 theme_override_font_sizes/font_size = 46
 text = "???"
 
+[node name="DoraMaci" type="TextureRect" parent="DialogController2/UI" unique_id=2061615963]
+visible = false
+z_index = -1
+layout_mode = 0
+offset_left = 308.0
+offset_top = 296.0
+offset_right = 546.0001
+offset_bottom = 517.99976
+texture = ExtResource("4_i2t4f")
+script = ExtResource("5_8cye3")
+
 [node name="CigCounter" type="HBoxContainer" parent="DialogController2/UI" unique_id=186086567]
 unique_name_in_owner = true
 layout_mode = 1
@@ -515,6 +613,7 @@ layout_mode = 2
 
 [node name="reload" type="AnimatedSprite2D" parent="DialogController2/UI" unique_id=1445284918]
 unique_name_in_owner = true
+visible = false
 position = Vector2(1090, 281)
 scale = Vector2(-1, 1)
 sprite_frames = SubResource("SpriteFrames_edtrs")
