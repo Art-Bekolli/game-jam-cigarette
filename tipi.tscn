@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://jomoeraaogka" path="res://hand-new.png" id="1_j3erc"]
 [ext_resource type="Texture2D" uid="uid://ce7y8fpckake" path="res://smokinghand.png" id="2_j3erc"]
+[ext_resource type="Texture2D" uid="uid://cmg0trifydswj" path="res://transparent-smoke-swirling-gracefully-on-a-bright-transparent-background-creating-an-ethereal-and-fascinating-texture-transparent-smoke-texture-on-transparent-background-free-png.webp" id="3_01c0e"]
 [ext_resource type="Shader" uid="uid://c1l1jdul7h0eq" path="res://tipi-drunk.gdshader" id="3_j3erc"]
 [ext_resource type="AudioStream" uid="uid://oyiv0hgsici7" path="res://ambient maybe.wav" id="4_06o0c"]
 [ext_resource type="AudioStream" uid="uid://bjxti56qldeji" path="res://main loop.wav" id="5_k3erj"]
@@ -17,6 +18,7 @@ var gravity = ProjectSettings.get_setting(\"physics/3d/default_gravity\")
 @onready var main_theme: AudioStreamPlayer = $\"Main Theme\"
 # --- UI Variables ---
 @onready var smoke_bar: ProgressBar = %smoke_bar
+@onready var smoke_particles: GPUParticles3D = $Camera3D/SmokeParticles
 
 # Sprite Textures
 @export var default_texture: Texture2D
@@ -79,11 +81,14 @@ func _unhandled_input(event):
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 			if default_texture:
 				sprite_3d.texture = default_texture
+			
+			# Blow smoke on release
+			if smoke_particles:
+				smoke_particles.restart() 
 
 	if event is InputEventMouseMotion and is_smoking:
 		if event.relative.y > 0:
 			smoke_meter = clamp(smoke_meter + (event.relative.y * (DRAG_SENSITIVITY * 0.005)), 0.0, MAX_SMOKE)
-
 	# --- Button Mashing to Upright Character ---
 	if tilt_target_dir != 0:
 		# If toppling LEFT (-1), tilt_angle is negative. Mash RIGHT to add positive recovery.
@@ -202,6 +207,35 @@ func _handle_camera_tilt_and_sway(delta):
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_0g6dx"]
 
+[sub_resource type="Gradient" id="Gradient_k3erj"]
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_mqlib"]
+gradient = SubResource("Gradient_k3erj")
+
+[sub_resource type="Curve" id="Curve_01c0e"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_0g6dx"]
+curve = SubResource("Curve_01c0e")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_7exjq"]
+direction = Vector3(0, 0, -1)
+spread = 20.0
+initial_velocity_min = 1.0
+initial_velocity_max = 2.0
+gravity = Vector3(0, 0.5, 0)
+scale_curve = SubResource("CurveTexture_0g6dx")
+color_ramp = SubResource("GradientTexture1D_mqlib")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u1bes"]
+transparency = 1
+albedo_texture = ExtResource("3_01c0e")
+billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_5fit5"]
+material = SubResource("StandardMaterial3D_u1bes")
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gb7wt"]
 bg_color = Color(1, 1, 1, 1)
 
@@ -231,6 +265,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7640715, 0)
 transform = Transform3D(0.039416313, -0.0068083797, 0, 0.0068083797, 0.039416313, 0, 0, 0, 0.04, 0.05, -0.03, -0.06)
 texture_filter = 0
 texture = ExtResource("1_j3erc")
+
+[node name="Smoke Particles" type="GPUParticles3D" parent="Camera3D" unique_id=895353284]
+emitting = false
+amount = 15
+lifetime = 1.5
+one_shot = true
+explosiveness = 0.8
+process_material = SubResource("ParticleProcessMaterial_7exjq")
+draw_pass_1 = SubResource("QuadMesh_5fit5")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=388340889]
 

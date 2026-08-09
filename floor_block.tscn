@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://dnj5acds20lbi" path="res://lamp-anim (1).png" id="1_01gtq"]
 [ext_resource type="Texture2D" uid="uid://dukujsck50dqj" path="res://jQ+tLq.png" id="1_348vk"]
-[ext_resource type="Texture2D" uid="uid://b3jjcturqw0ju" path="res://skyline-8285171_1280.png" id="2_wbgmg"]
+[ext_resource type="Texture2D" uid="uid://oklrcpfcvm4d" path="res://sides_sprite_yay.png" id="3_55m3k"]
 [ext_resource type="Texture2D" uid="uid://2pn25seb6j2k" path="res://udq9asephmpy.png" id="4_u6vbm"]
 [ext_resource type="Texture2D" uid="uid://hcwejyr57v6w" path="res://sr288e9f0b963aws3.webp" id="5_d1pkk"]
 [ext_resource type="Texture2D" uid="uid://buw1g1pqwjsm" path="res://an-illustration-of-a-road-with-yellow-lines-free-vector.jpg" id="6_55m3k"]
@@ -200,24 +200,28 @@ light_energy = 10.722
 omni_range = 3.715
 
 [node name="Sprite3D4" type="Sprite3D" parent="." unique_id=416508572]
-transform = Transform3D(-2.7275906e-08, 0, 0.624, 0, 0.624, 0, -0.624, 0, -2.7275906e-08, -6.00801, 3.0148158, 0)
+transform = Transform3D(-3.4969112e-08, 0, 0.8, 0, 2, 0, -0.8, 0, -3.4969112e-08, -6.00801, 2.3262951, 0)
+modulate = Color(0.4490974, 0.25195897, 0.11102117, 1)
 texture_filter = 0
-texture = ExtResource("2_wbgmg")
+texture = ExtResource("3_55m3k")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Sprite3D4" unique_id=1499354287]
-transform = Transform3D(1.6025641, 0, 1.4210855e-14, 0, 1.6025641, 0, -1.4210855e-14, 0, 1.6025641, -3.6131847, -1.9197512, 0)
-light_color = Color(0.7411765, 0.73333335, 0, 1)
-light_energy = 0.5
+transform = Transform3D(1.2499999, 0, 7.1054274e-15, 0, 0.5, 0, -7.1054274e-15, 0, 1.2499999, 0.6263156, 0.87912214, 0.68518114)
+light_color = Color(0.9087857, 0.8992915, 0, 1)
+light_energy = 4.754
+omni_range = 7.679
 
 [node name="Sprite3D5" type="Sprite3D" parent="." unique_id=535924113]
-transform = Transform3D(-2.7275906e-08, 0, 0.624, 0, 0.624, 0, -0.624, 0, -2.7275906e-08, 5.961237, 3.0148158, 0)
+transform = Transform3D(-3.4969112e-08, 0, 0.8, 0, 2, 0, -0.8, 0, -3.4969112e-08, 5.961237, 2.3262951, 0)
+modulate = Color(0.4490974, 0.25195897, 0.11102117, 1)
 texture_filter = 0
-texture = ExtResource("2_wbgmg")
+texture = ExtResource("3_55m3k")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Sprite3D5" unique_id=316663428]
-transform = Transform3D(1.6025641, 0, 1.4210855e-14, 0, 1.6025641, 0, -1.4210855e-14, 0, 1.6025641, -3.511853, -1.7845402, 0)
-light_color = Color(0.7411765, 0.73333335, 0, 1)
-light_energy = 0.5
+transform = Transform3D(1.2499999, 0, 7.1054274e-15, 0, 0.5, 0, -7.1054274e-15, 0, 1.2499999, 0.010470823, 0.8550242, -1.7721491)
+light_color = Color(0.78388524, 0.7756208, 0, 1)
+light_energy = 4.7
+omni_range = 7.6
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1169537869]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.495229, 0.20520633, -2.5947866)
