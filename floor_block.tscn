@@ -3,6 +3,9 @@
 [ext_resource type="Texture2D" uid="uid://dnj5acds20lbi" path="res://lamp-anim (1).png" id="1_01gtq"]
 [ext_resource type="Texture2D" uid="uid://dukujsck50dqj" path="res://jQ+tLq.png" id="1_348vk"]
 [ext_resource type="Texture2D" uid="uid://b3jjcturqw0ju" path="res://skyline-8285171_1280.png" id="2_wbgmg"]
+[ext_resource type="Texture2D" uid="uid://2pn25seb6j2k" path="res://udq9asephmpy.png" id="4_u6vbm"]
+[ext_resource type="Texture2D" uid="uid://hcwejyr57v6w" path="res://sr288e9f0b963aws3.webp" id="5_d1pkk"]
+[ext_resource type="Texture2D" uid="uid://crjls2sxo0x6c" path="res://road tile.png" id="6_55m3k"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wbgmg"]
 albedo_texture = ExtResource("1_348vk")
@@ -78,6 +81,47 @@ animations = [{
 "name": &"default",
 "speed": 5.0
 }]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_55m3k"]
+albedo_texture = ExtResource("4_u6vbm")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_7exjq"]
+size = Vector3(0.9503174, 0.42163086, 0.4453125)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_0g6dx"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yq1sd"]
+albedo_texture = ExtResource("5_d1pkk")
+uv1_triplanar = true
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_1b1wh"]
+top_radius = 0.2758789
+bottom_radius = 0.2758789
+height = 1.5048828
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_rgyfw"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5fit5"]
+albedo_texture = ExtResource("4_u6vbm")
+uv1_scale = Vector3(1.5, 1.5, 1.5)
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_0g6dx"]
+size = Vector3(0.6801758, 0.63775635, 0.49853516)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_mqlib"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7exjq"]
+diffuse_mode = 1
+specular_mode = 1
+albedo_texture = ExtResource("6_55m3k")
+uv1_scale = Vector3(4, 4, 4)
+texture_filter = 0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_0g6dx"]
 
 [node name="FloorBlock" type="Node3D" unique_id=113252652]
 
@@ -157,3 +201,60 @@ texture = ExtResource("2_wbgmg")
 transform = Transform3D(1.6025641, 0, 1.4210855e-14, 0, 1.6025641, 0, -1.4210855e-14, 0, 1.6025641, -3.511853, -1.7845402, 0)
 light_color = Color(0.7411765, 0.73333335, 0, 1)
 light_energy = 0.5
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1169537869]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.495229, 0.20520633, -2.5947866)
+material_overlay = SubResource("StandardMaterial3D_55m3k")
+mesh = SubResource("BoxMesh_7exjq")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D2" unique_id=730903108]
+physics_material_override = SubResource("PhysicsMaterial_0g6dx")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="." unique_id=725127733]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.6885138, 0.14619458, -3.1434238)
+material_overlay = SubResource("StandardMaterial3D_yq1sd")
+mesh = SubResource("CylinderMesh_1b1wh")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D3" unique_id=1367719865]
+physics_material_override = SubResource("PhysicsMaterial_rgyfw")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="." unique_id=1413717312]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.667151, 0.31764078, -3.6834912)
+material_overlay = SubResource("StandardMaterial3D_5fit5")
+mesh = SubResource("BoxMesh_0g6dx")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D4" unique_id=806171857]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.59813964, 0)
+physics_material_override = SubResource("PhysicsMaterial_mqlib")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="." unique_id=685652439]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.479445, 0.223266, 1.9223926)
+material_overlay = SubResource("StandardMaterial3D_55m3k")
+mesh = SubResource("BoxMesh_7exjq")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D5" unique_id=1384680446]
+physics_material_override = SubResource("PhysicsMaterial_0g6dx")
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="." unique_id=237895041]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.644709, 0.16425425, 2.445765)
+material_overlay = SubResource("StandardMaterial3D_yq1sd")
+mesh = SubResource("CylinderMesh_1b1wh")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D6" unique_id=772455276]
+physics_material_override = SubResource("PhysicsMaterial_rgyfw")
+
+[node name="MeshInstance3D7" type="MeshInstance3D" parent="." unique_id=217057166]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.6660714, 0.33570045, 2.9443002)
+material_overlay = SubResource("StandardMaterial3D_5fit5")
+mesh = SubResource("BoxMesh_0g6dx")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D7" unique_id=1406532635]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.59813964, 0)
+physics_material_override = SubResource("PhysicsMaterial_mqlib")
+
+[node name="Sprite3D6" type="MeshInstance3D" parent="." unique_id=327207308]
+transform = Transform3D(1.5, 0, 0, 0, 0.2, 0, 0, 0, 4, 0, 0.01, 0)
+material_overlay = SubResource("StandardMaterial3D_7exjq")
+mesh = SubResource("PlaneMesh_0g6dx")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Sprite3D6" unique_id=1902763656]
