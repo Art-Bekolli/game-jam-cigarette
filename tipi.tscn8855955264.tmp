@@ -120,7 +120,7 @@ func _physics_process(delta):
 			
 		# Transition to Game Over scene after collapse animation finishes (2 seconds)
 		fall_timer += delta
-	
+		if fall_timer >= 2.0:
 			# Restore mouse cursor visibility for the 2D Game Over UI
 
 		move_and_slide()
@@ -142,20 +142,12 @@ func _physics_process(delta):
 		var input_dir = Input.get_axis(\"forward\", \"back\")
 		var direction = (transform.basis * Vector3(0, 0, input_dir)).normalized()
 		
-		if Global.playerCanMove: 
-			if direction:
-				velocity.x = direction.x * SPEED
-				velocity.z = direction.z * SPEED
-			else:
-				velocity.x = move_toward(velocity.x, 0, SPEED)
-				velocity.z = move_toward(velocity.z, 0, SPEED)
-
-		_handle_hand_bob(delta)
-	
-		if smoke_bar:
-			smoke_bar.value = smoke_meter
-			
-			
+		if direction:
+			velocity.x = direction.x * SPEED
+			velocity.z = direction.z * SPEED
+		else:
+			velocity.x = move_toward(velocity.x, 0, SPEED)
+			velocity.z = move_toward(velocity.z, 0, SPEED)
 
 	_handle_hand_bob(delta)
 	_handle_camera_tilt_and_sway(delta)

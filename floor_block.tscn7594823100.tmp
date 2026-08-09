@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://b3jjcturqw0ju" path="res://skyline-8285171_1280.png" id="2_wbgmg"]
 [ext_resource type="Texture2D" uid="uid://2pn25seb6j2k" path="res://udq9asephmpy.png" id="4_u6vbm"]
 [ext_resource type="Texture2D" uid="uid://hcwejyr57v6w" path="res://sr288e9f0b963aws3.webp" id="5_d1pkk"]
-[ext_resource type="Texture2D" uid="uid://buw1g1pqwjsm" path="res://an-illustration-of-a-road-with-yellow-lines-free-vector.jpg" id="6_55m3k"]
+[ext_resource type="Texture2D" uid="uid://crjls2sxo0x6c" path="res://road tile.png" id="6_55m3k"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wbgmg"]
 albedo_texture = ExtResource("1_348vk")
@@ -117,27 +117,25 @@ size = Vector3(0.6801758, 0.63775635, 0.49853516)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7exjq"]
 diffuse_mode = 1
 specular_mode = 1
-albedo_color = Color(0.7557759, 0.5864241, 1, 1)
 albedo_texture = ExtResource("6_55m3k")
+uv1_scale = Vector3(4, 4, 4)
 texture_filter = 0
-texture_repeat = false
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_0g6dx"]
 
 [sub_resource type="GDScript" id="GDScript_nb4ac"]
 script/source = "extends MeshInstance3D
 
+
+# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	# Ensure we are modifying a unique instance so other meshes don't change
-	var mat = get_active_material(0)
-	if mat:
-		# Duplicating the material prevents changing all meshes sharing this material
-		mat = mat.duplicate()
-		material_override = mat
-		
-		# Set the color tint.
-		# Color(Red, Green, Blue) — 0.5 blends the red with the original texture colors.
-		mat.albedo_color = Color(1.0, 0, 0)
+# Turns the Sprite3D red
+	$Sprite3D.modulate = Color(1, 0, 0)
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
 "
 
 [node name="FloorBlock" type="Node3D" unique_id=113252652]
@@ -269,10 +267,10 @@ mesh = SubResource("BoxMesh_0g6dx")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.59813964, 0)
 physics_material_override = SubResource("PhysicsMaterial_mqlib")
 
-[node name="road" type="MeshInstance3D" parent="." unique_id=327207308]
+[node name="Sprite3D6" type="MeshInstance3D" parent="." unique_id=327207308]
 transform = Transform3D(1.5, 0, 0, 0, 0.2, 0, 0, 0, 4, 0, 0.01, 0)
 material_overlay = SubResource("StandardMaterial3D_7exjq")
 mesh = SubResource("PlaneMesh_0g6dx")
 script = SubResource("GDScript_nb4ac")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="road" unique_id=1902763656]
+[node name="StaticBody3D" type="StaticBody3D" parent="Sprite3D6" unique_id=1902763656]
