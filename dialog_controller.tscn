@@ -1,0 +1,114 @@
+[gd_scene format=3 uid="uid://c482b2b4u7yk"]
+
+[ext_resource type="PackedScene" uid="uid://bspjcrkbbbhqq" path="res://ui.tscn" id="1_2l48k"]
+[ext_resource type="PackedScene" uid="uid://dksa215nbn4yv" path="res://no.tscn" id="2_7t003"]
+[ext_resource type="PackedScene" uid="uid://be3jm6aifoaed" path="res://yes.tscn" id="3_b3r2h"]
+
+[sub_resource type="GDScript" id="GDScript_s6vx1"]
+script/source = "extends Node3D
+
+@onready var dialogiyesno: Control = $dialogiyesno
+
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+
+
+var isVisible = false 
+
+
+
+func ChangeVisibilityState(state):
+	dialogiyesno.visible = state
+"
+
+[sub_resource type="GDScript" id="GDScript_bkvvr"]
+script/source = "extends Control
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+	
+"
+
+[sub_resource type="GDScript" id="GDScript_45dbx"]
+script/source = "extends Panel
+
+@onready var dialogiyesno: Control = %dialogiyesno
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+	
+"
+
+[node name="DialogController" type="Node3D" unique_id=1354771923]
+script = SubResource("GDScript_s6vx1")
+
+[node name="dialogiyesno" parent="." unique_id=140057889 instance=ExtResource("1_2l48k")]
+visible = false
+script = SubResource("GDScript_bkvvr")
+
+[node name="Panel2" type="Panel" parent="dialogiyesno" unique_id=413730311]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -332.0
+offset_top = -256.76
+offset_right = 332.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 0
+script = SubResource("GDScript_45dbx")
+
+[node name="no" parent="dialogiyesno/Panel2" unique_id=183243791 instance=ExtResource("2_7t003")]
+layout_mode = 0
+anchors_preset = 0
+
+[node name="yes" parent="dialogiyesno/Panel2" unique_id=180380940 instance=ExtResource("3_b3r2h")]
+layout_mode = 0
+anchors_preset = 0
+
+[node name="Label" type="Label" parent="dialogiyesno/Panel2" unique_id=2023993758]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -330.0
+offset_top = -30.619995
+offset_right = 243.0
+offset_bottom = 32.380005
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 45
+text = "Can i ask you something?"
+
+[node name="Label2" type="Label" parent="dialogiyesno/Panel2" unique_id=790029017]
+layout_mode = 1
+offset_right = 105.0
+offset_bottom = 106.0
+theme_override_font_sizes/font_size = 46
+text = "???"

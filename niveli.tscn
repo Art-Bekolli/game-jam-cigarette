@@ -1,0 +1,260 @@
+[gd_scene format=3 uid="uid://cc657qpv5rvtr"]
+
+[ext_resource type="PackedScene" uid="uid://dwycho4t12uio" path="res://ipit.tscn" id="1_ufhrt"]
+
+[sub_resource type="GDScript" id="GDScript_glnct"]
+script/source = "extends Node3D
+
+# 1. Hardcode the file path to your 3D enemy scene
+const IPIT = preload(\"uid://dwycho4t12uio\")
+@onready var spawnipit: Timer = $spawnipit
+@onready var ipit: StaticBody3D = $ipit 
+
+
+var min_time: float = 1.0
+var max_time: float = 2.0
+
+func _spawn_enemy_3d() -> void:
+	await get_tree().create_timer(randf_range(min_time, max_time)).timeout
+	var new_enemy = IPIT.instantiate()
+	
+	var random_x = randf_range(0, 0)
+	var random_z = randf_range(-30.0, -80.0) 
+	var spawn_position = Vector3(random_x, 0.0, random_z)
+	
+	new_enemy.global_position = spawn_position
+	add_child(new_enemy)
+	
+	new_enemy.chance =+ .05
+"
+
+[sub_resource type="GDScript" id="GDScript_edtrs"]
+script/source = "extends CharacterBody3D
+
+@onready var dialogiyesno: Control = %dialogiyesno
+@onready var yes: Button = $\"../CanvasLayer/dialogiyesno/Panel2/yes\"
+@onready var no: Button = $\"../CanvasLayer/dialogiyesno/Panel2/no\"
+@onready var ipit: StaticBody3D = $\"../ipit\"
+@onready var dialog_controller: CanvasLayer = $\"../DialogController\"
+
+
+
+
+
+
+var canwalk = true
+const SPEED = 5.0
+const JUMP_VELOCITY = 4.5
+
+
+
+
+
+func _physics_process(delta: float) -> void:
+	if Global.playerCanMove:
+		if not is_on_floor():
+			velocity += get_gravity() * delta
+
+		# Handle jump.
+		if Input.is_action_just_pressed(\"ui_accept\") and is_on_floor():
+			velocity.y = JUMP_VELOCITY
+
+		# Get the input direction and handle the movement/deceleration.
+		# As good practice, you should replace UI actions with custom gameplay actions.
+		var input_dir := Input.get_vector(\"left\", \"right\", \"forward\", \"backward\")
+		var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+		if direction:
+			velocity.x = direction.x * SPEED
+			velocity.z = direction.z * SPEED
+		else:
+			velocity.x = move_toward(velocity.x, 0, SPEED)
+			velocity.z = move_toward(velocity.z, 0, SPEED)
+
+		move_and_slide()
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_edtrs"]
+radius = 1.5639648
+height = 7.970215
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_edtrs"]
+size = Vector2(100, 100)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_glnct"]
+data = PackedVector3Array(100, 0, 100, -100, 0, 100, 100, 0, -100, -100, 0, 100, -100, 0, -100, 100, 0, -100)
+
+[sub_resource type="GDScript" id="GDScript_ufhrt"]
+script/source = "extends CanvasLayer
+
+@onready var dialogiyesno: Control = $dialogiyesno
+@onready var main: Node3D = $\"..\"
+
+var isVisible = false 
+
+
+
+func ChangeVisibilityState(state):
+	dialogiyesno.visible = state
+
+func onAnswer() -> void:
+	Global.currentIpit.queue_free()
+	ChangeVisibilityState(false)
+	Global.playerCanMove = true
+	main._spawn_enemy_3d() 
+
+
+
+
+func _on_no_pressed() -> void:
+	onAnswer()
+
+
+func _on_yes_pressed() -> void:
+	onAnswer()
+"
+
+[sub_resource type="GDScript" id="GDScript_dcxhc"]
+script/source = "extends Node3D
+
+@onready var dialog_controller: CanvasLayer = $\"../DialogController\"
+
+const IPIT = preload(\"uid://dwycho4t12uio\")
+@onready var main: Node3D = $\"..\"
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+
+
+	
+		
+		
+
+
+func _on_yes_pressed() -> void:
+	pass # Replace with function body.
+
+
+func _on_no_pressed() -> void:
+	pass # Replace with function body.
+"
+
+[node name="Main" type="Node3D" unique_id=433764472]
+script = SubResource("GDScript_glnct")
+
+[node name="tipi" type="CharacterBody3D" parent="." unique_id=1344482239]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.4762535, -0.05830574)
+script = SubResource("GDScript_edtrs")
+
+[node name="Camera3D" type="Camera3D" parent="tipi" unique_id=510310478]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.916792, 0.32722235)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="tipi" unique_id=47817638]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6320801, 0.5403652)
+shape = SubResource("CapsuleShape3D_edtrs")
+debug_color = Color(0.8509804, 0, 0.9019608, 1)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1803143666]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5002842, -0.05471134, -5.803064)
+mesh = SubResource("PlaneMesh_edtrs")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D" unique_id=1171346275]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D" unique_id=1747036787]
+shape = SubResource("ConcavePolygonShape3D_glnct")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1350967849]
+transform = Transform3D(1, 0, 0, 0, 0.9293108, 0.36929852, 0, -0.36929852, 0.9293108, -2.5144806, 15.930649, 2.8670979)
+light_energy = 2.901
+
+[node name="ipit" parent="." unique_id=543376239 instance=ExtResource("1_ufhrt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.97925, -22.110924)
+
+[node name="DialogController" type="CanvasLayer" parent="." unique_id=1019929596]
+script = SubResource("GDScript_ufhrt")
+
+[node name="dialogiyesno" type="Control" parent="DialogController" unique_id=140057889]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="DialogController/dialogiyesno" unique_id=2061931650]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -332.0
+offset_top = -256.76
+offset_right = 332.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="No" type="Button" parent="DialogController/dialogiyesno/Panel" unique_id=450854445]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -55.0
+offset_top = -42.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "No
+"
+
+[node name="Yes" type="Button" parent="DialogController/dialogiyesno/Panel" unique_id=1167892131]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 609.0
+offset_top = -82.0
+offset_right = 664.0
+offset_bottom = -40.0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "Yes"
+
+[node name="Label" type="Label" parent="DialogController/dialogiyesno/Panel" unique_id=1732962931]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -330.0
+offset_top = -30.619995
+offset_right = 243.0
+offset_bottom = 32.380005
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 45
+text = "Can i ask you something?"
+
+[node name="Label2" type="Label" parent="DialogController/dialogiyesno/Panel" unique_id=439511013]
+layout_mode = 1
+offset_right = 105.0
+offset_bottom = 106.0
+theme_override_font_sizes/font_size = 46
+text = "???"
+
+[node name="ByeTipi" type="Node3D" parent="." unique_id=1790682727]
+script = SubResource("GDScript_dcxhc")
+
+[connection signal="pressed" from="DialogController/dialogiyesno/Panel/No" to="DialogController" method="_on_no_pressed"]
+[connection signal="pressed" from="DialogController/dialogiyesno/Panel/Yes" to="DialogController" method="_on_yes_pressed"]

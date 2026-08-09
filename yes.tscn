@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://be3jm6aifoaed"]
+
+[node name="yes" type="Button" unique_id=180380940]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 609.0
+offset_top = -82.0
+offset_right = 664.0
+offset_bottom = -40.0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "Yes"
