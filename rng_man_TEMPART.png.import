@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cgyqlpbhrjmk4"
-path.s3tc="res://.godot/imported/anime_catgirl.png-2ce4fbe52758f1f3e30691ad88d762d6.s3tc.ctex"
+uid="uid://bklrvff0nx52m"
+path.s3tc="res://.godot/imported/rng_man_TEMPART.png-e3738d5a15d0aeb34aebd363261c541b.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://anime_catgirl.png"
-dest_files=["res://.godot/imported/anime_catgirl.png-2ce4fbe52758f1f3e30691ad88d762d6.s3tc.ctex"]
+source_file="res://rng_man_TEMPART.png"
+dest_files=["res://.godot/imported/rng_man_TEMPART.png-e3738d5a15d0aeb34aebd363261c541b.s3tc.ctex"]
 
 [params]
 

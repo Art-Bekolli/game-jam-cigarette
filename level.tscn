@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://b1fv0aqujjm3k" path="res://floor_block.tscn" id="1_vonw3"]
 [ext_resource type="Texture2D" uid="uid://dfbqv5ua0eotr" path="res://c58d078a-856c-4aed-9ff9-0bf536e245f2.jpg" id="3_oi3di"]
 [ext_resource type="PackedScene" uid="uid://dwycho4t12uio" path="res://ipit.tscn" id="4_0b4ue"]
+[ext_resource type="PackedScene" uid="uid://coj104ke8v37h" path="res://sprite_chance.tscn" id="5_f2txt"]
 
 [sub_resource type="GDScript" id="GDScript_afelo"]
 script/source = "extends Node3D
@@ -78,12 +79,10 @@ script/source = "extends CanvasLayer
 
 @onready var dialogiyesno: Control = $dialogiyesno
 @onready var main: Node3D = $\"..\"
-
+@onready var sprite_chance: Node3D = $\"../SpriteChance\"
 
 
 var isVisible = false 
-
-
 
 func ChangeVisibilityState(state):
 	dialogiyesno.visible = state
@@ -94,15 +93,16 @@ func onAnswer() -> void:
 	Global.playerCanMove = true
 	main._spawn_enemy_3d()
 
-
-
+func onAnswer2() -> void:
+		sprite_chance.tipiShanca()
 
 func _on_no_pressed() -> void:
 	onAnswer()
-
+	onAnswer2()
 
 func _on_yes_pressed() -> void:
 	onAnswer()
+	onAnswer2()
 "
 
 [node name="Level" type="Node3D" unique_id=181682921 node_paths=PackedStringArray("player")]
@@ -121,11 +121,13 @@ script = SubResource("GDScript_f2txt")
 [node name="dialogiyesno" type="Control" parent="DialogController2" unique_id=942243043]
 visible = false
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
 grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
 
 [node name="Panel" type="Panel" parent="DialogController2/dialogiyesno" unique_id=2020335210]
 layout_mode = 1
@@ -134,10 +136,6 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -332.0
-offset_top = -256.76
-offset_right = 332.0
-offset_bottom = -64.0
 grow_horizontal = 2
 grow_vertical = 0
 
@@ -193,7 +191,12 @@ theme_override_font_sizes/font_size = 46
 text = "???"
 
 [node name="ipit" parent="." unique_id=543376239 instance=ExtResource("4_0b4ue")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0194471, -0.030465126, -22.09767)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.38035607, -0.8572912, -22.090158)
+
+[node name="InitialSend" type="Node3D" parent="ipit" unique_id=791545001]
+
+[node name="SpriteChance" parent="." unique_id=762704240 instance=ExtResource("5_f2txt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0194471, 0.030465126, 22.09767)
 
 [connection signal="pressed" from="DialogController2/dialogiyesno/Panel/No" to="DialogController2" method="_on_no_pressed"]
 [connection signal="pressed" from="DialogController2/dialogiyesno/Panel/Yes" to="DialogController2" method="_on_yes_pressed"]

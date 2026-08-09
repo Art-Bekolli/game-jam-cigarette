@@ -1,10 +1,13 @@
 [gd_scene format=3 uid="uid://dwycho4t12uio"]
 
-[ext_resource type="Texture2D" uid="uid://cgyqlpbhrjmk4" path="res://anime_catgirl.png" id="1_5hgrc"]
+[ext_resource type="Texture2D" uid="uid://bklrvff0nx52m" path="res://rng_man_TEMPART.png" id="1_5hgrc"]
 
 [sub_resource type="GDScript" id="GDScript_jmh37"]
 script/source = "extends StaticBody3D
 
+const TEX_MIRI_SHUME = preload(\"res://miri_shume.png\")
+
+@onready var sprite_chance: Node3D = $\"../SpriteChance\"
 @onready var dialog_controller: CanvasLayer = $\"../DialogController2\"
 
 
@@ -15,6 +18,10 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 		Global.playerCanMove = false
 		Global.currentIpit = self
 		dialog_controller.ChangeVisibilityState(true)
+
+
+
+	
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_e3hyo"]
@@ -40,7 +47,7 @@ func keqi():
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_edtrs"]
-size = Vector3(3.170227, 6.3621826, 2.8222656)
+size = Vector3(3.170227, 6.3621826, 4.2407227)
 
 [sub_resource type="GDScript" id="GDScript_5hgrc"]
 script/source = "extends CanvasLayer
@@ -71,21 +78,22 @@ func ChangeVisibilityState(state):
 script = SubResource("GDScript_jmh37")
 
 [node name="Area3D" type="Area3D" parent="." unique_id=815602987]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0189123, 0.9717026, 6.021595)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0189123, 0.9717026, 4.75463)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=1160225327]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.994153, 0.9782696, 0.7624874)
+transform = Transform3D(0.99999523, -0.00078754453, -0.002986232, 0.0007759216, 0.99999213, -0.003894921, 0.0029892733, 0.0038925875, 0.99998796, -0.994153, 0.9782696, -4.794883)
 visible = false
 shape = SubResource("BoxShape3D_e3hyo")
 debug_color = Color(0, 0.6, 0.69803923, 1)
 script = SubResource("GDScript_ndypg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=669043999]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.482049, 1.6899223, -0.8063469)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.482049, 1.6899223, 1.6156511)
 shape = SubResource("BoxShape3D_edtrs")
 debug_color = Color(0.9411765, 0, 0.61960787, 1)
 
-[node name="Sprite3D" type="Sprite3D" parent="CollisionShape3D" unique_id=1125777896]
+[node name="AnimatedSprite3D" type="Sprite3D" parent="CollisionShape3D" unique_id=291414946]
+pixel_size = 0.017
 texture = ExtResource("1_5hgrc")
 
 [node name="DialogController" type="CanvasLayer" parent="." unique_id=152083373]
