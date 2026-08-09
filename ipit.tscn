@@ -1,10 +1,13 @@
 [gd_scene format=3 uid="uid://dwycho4t12uio"]
 
-[ext_resource type="Texture2D" uid="uid://cgyqlpbhrjmk4" path="res://anime_catgirl.png" id="1_5hgrc"]
+[ext_resource type="Texture2D" uid="uid://bklrvff0nx52m" path="res://rng_man_TEMPART.png" id="1_5hgrc"]
 
 [sub_resource type="GDScript" id="GDScript_jmh37"]
 script/source = "extends StaticBody3D
 
+
+
+@onready var sprite_chance: Node3D = $\"../SpriteChance\"
 @onready var dialog_controller: CanvasLayer = $\"../DialogController2\"
 
 
@@ -40,129 +43,29 @@ func keqi():
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_edtrs"]
-size = Vector3(3.170227, 6.3621826, 2.8222656)
-
-[sub_resource type="GDScript" id="GDScript_5hgrc"]
-script/source = "extends CanvasLayer
-
-@onready var dialogiyesno: Control = $dialogiyesno
-
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
-
-var isVisible = false 
-
-
-
-func ChangeVisibilityState(state):
-	dialogiyesno.visible = state
-"
+size = Vector3(3.170227, 6.3621826, 4.2407227)
 
 [node name="ipit" type="StaticBody3D" unique_id=543376239]
 script = SubResource("GDScript_jmh37")
 
 [node name="Area3D" type="Area3D" parent="." unique_id=815602987]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0189123, 0.9717026, 6.021595)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0189123, 0.9717026, 4.75463)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=1160225327]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.994153, 0.9782696, 0.7624874)
+transform = Transform3D(0.99999523, -0.00078754453, -0.002986232, 0.0007759216, 0.99999213, -0.003894921, 0.0029892733, 0.0038925875, 0.99998796, -0.994153, 0.9782696, -4.794883)
 visible = false
 shape = SubResource("BoxShape3D_e3hyo")
 debug_color = Color(0, 0.6, 0.69803923, 1)
 script = SubResource("GDScript_ndypg")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=669043999]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.482049, 1.6899223, -0.8063469)
-shape = SubResource("BoxShape3D_edtrs")
-debug_color = Color(0.9411765, 0, 0.61960787, 1)
-
-[node name="Sprite3D" type="Sprite3D" parent="CollisionShape3D" unique_id=1125777896]
+[node name="AnimatedSprite3D" type="Sprite3D" parent="." unique_id=291414946]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.482049, 1.6899223, 1.6156511)
+pixel_size = 0.017
 texture = ExtResource("1_5hgrc")
 
-[node name="DialogController" type="CanvasLayer" parent="." unique_id=152083373]
-script = SubResource("GDScript_5hgrc")
-
-[node name="dialogiyesno" type="Control" parent="DialogController" unique_id=539957378]
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Panel" type="Panel" parent="DialogController/dialogiyesno" unique_id=1670253482]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -332.0
-offset_top = -256.76
-offset_right = 332.0
-offset_bottom = -64.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="No" type="Button" parent="DialogController/dialogiyesno/Panel" unique_id=1990663990]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -55.0
-offset_top = -42.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_font_sizes/font_size = 24
-text = "No
-"
-
-[node name="Yes" type="Button" parent="DialogController/dialogiyesno/Panel" unique_id=1150480774]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 609.0
-offset_top = -82.0
-offset_right = 664.0
-offset_bottom = -40.0
-grow_vertical = 0
-theme_override_font_sizes/font_size = 24
-text = "Yes"
-
-[node name="Label" type="Label" parent="DialogController/dialogiyesno/Panel" unique_id=1519322502]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -330.0
-offset_top = -30.619995
-offset_right = 243.0
-offset_bottom = 32.380005
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 45
-text = "Can i ask you something?"
-
-[node name="Label2" type="Label" parent="DialogController/dialogiyesno/Panel" unique_id=1020034274]
-layout_mode = 1
-offset_right = 105.0
-offset_bottom = 106.0
-theme_override_font_sizes/font_size = 46
-text = "???"
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=669043999]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.482049, 1.6899223, 1.6156511)
+shape = SubResource("BoxShape3D_edtrs")
+debug_color = Color(0.9411765, 0, 0.61960787, 1)
 
 [connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]

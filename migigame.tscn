@@ -1,0 +1,174 @@
+[gd_scene format=3 uid="uid://6vx2c5kj1y5d"]
+
+[ext_resource type="Texture2D" uid="uid://c1kia2felmtie" path="res://cigibox/ciggie_game_backofpack.png" id="1_1p7do"]
+[ext_resource type="Script" uid="uid://cnubq1px2jaxy" path="res://migigame.gd" id="1_ex4mv"]
+[ext_resource type="Texture2D" uid="uid://5wh1l0brf3hf" path="res://cigibox/hand-pinching-cigarette-minigame.png" id="2_gn2gd"]
+[ext_resource type="Texture2D" uid="uid://dv4jvf12nb2pv" path="res://cigibox/cigiboxi.png" id="2_oyc7v"]
+[ext_resource type="Texture2D" uid="uid://e1h83typ4u3e" path="res://cigibox/ciggie_game_frontofpack.png" id="3_ex4mv"]
+
+[sub_resource type="Animation" id="Animation_3a0h4"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("..:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(619, -80)]
+}
+
+[sub_resource type="Animation" id="Animation_uy0tu"]
+resource_name = "levizja"
+
+[sub_resource type="Animation" id="Animation_eg67y"]
+resource_name = "new_animation"
+length = 1.9666667
+
+[sub_resource type="Animation" id="Animation_ex4mv"]
+resource_name = "new_animation_2"
+length = 2.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("..:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.033333335, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(619, -80), Vector2(296, -74)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ppjej"]
+_data = {
+&"RESET": SubResource("Animation_3a0h4"),
+&"levizja": SubResource("Animation_uy0tu"),
+&"new_animation": SubResource("Animation_eg67y"),
+&"new_animation_2": SubResource("Animation_ex4mv")
+}
+
+[node name="Control" type="Control" unique_id=140785821]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ex4mv")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=956783089]
+root_node = NodePath("../TextureRect/Dora")
+libraries/ = SubResource("AnimationLibrary_ppjej")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=858575740]
+layout_mode = 0
+offset_left = 619.0
+offset_top = -80.0
+offset_right = 895.9997
+offset_bottom = 259.0
+texture = ExtResource("2_gn2gd")
+
+[node name="Dora" type="Control" parent="TextureRect" unique_id=1780430577]
+anchors_preset = 0
+offset_left = 110.0
+offset_top = 286.0
+offset_right = 155.0
+offset_bottom = 323.0
+
+[node name="cigibnalt" type="TextureRect" parent="." unique_id=129154085]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.035
+anchor_bottom = 0.031000001
+offset_left = 442.0
+offset_top = 258.0
+offset_right = 651.68
+offset_bottom = 473.912
+texture = ExtResource("1_1p7do")
+
+[node name="cigihitbox" type="Control" parent="." unique_id=1444613698]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="cig4" type="Control" parent="cigihitbox" unique_id=1516988267]
+anchors_preset = 0
+offset_left = 504.0
+offset_top = 365.0
+offset_right = 544.0
+offset_bottom = 411.0
+
+[node name="TextureRect" type="TextureRect" parent="cigihitbox/cig4" unique_id=500031679]
+layout_mode = 0
+offset_left = 117.0
+offset_top = -3.0
+offset_right = 157.0
+offset_bottom = 144.0
+texture = ExtResource("2_oyc7v")
+
+[node name="cig3" type="Control" parent="cigihitbox" unique_id=1201407133]
+anchors_preset = 0
+offset_left = 582.0
+offset_top = 362.0
+offset_right = 622.0
+offset_bottom = 408.0
+
+[node name="TextureRect" type="TextureRect" parent="cigihitbox/cig3" unique_id=1196693446]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 147.0
+texture = ExtResource("2_oyc7v")
+
+[node name="cig2" type="Control" parent="cigihitbox" unique_id=1380042475]
+anchors_preset = 0
+offset_left = 542.0
+offset_top = 363.0
+offset_right = 582.0
+offset_bottom = 409.0
+
+[node name="TextureRect" type="TextureRect" parent="cigihitbox/cig2" unique_id=2027853846]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 41.0
+offset_bottom = 148.0
+texture = ExtResource("2_oyc7v")
+
+[node name="cig1" type="Control" parent="cigihitbox" unique_id=1161906685]
+anchors_preset = 0
+offset_left = 504.0
+offset_top = 365.0
+offset_right = 543.0
+offset_bottom = 411.0
+
+[node name="TextureRect" type="TextureRect" parent="cigihitbox/cig1" unique_id=904171770]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_oyc7v")
+
+[node name="cigibposht" type="TextureRect" parent="." unique_id=164770375]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.035
+anchor_bottom = 0.031000001
+offset_left = 443.0
+offset_top = 245.0
+offset_right = 652.68
+offset_bottom = 492.912
+texture = ExtResource("3_ex4mv")
+
+[node name="Button" type="Button" parent="." unique_id=2031539148]
+visible = false
+layout_mode = 0
+offset_left = 1.0
+offset_top = 5.0
+offset_right = 1153.0
+offset_bottom = 655.0
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

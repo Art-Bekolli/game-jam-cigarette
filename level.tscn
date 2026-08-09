@@ -4,6 +4,11 @@
 [ext_resource type="PackedScene" uid="uid://b1fv0aqujjm3k" path="res://floor_block.tscn" id="1_vonw3"]
 [ext_resource type="Texture2D" uid="uid://dfbqv5ua0eotr" path="res://c58d078a-856c-4aed-9ff9-0bf536e245f2.jpg" id="3_oi3di"]
 [ext_resource type="PackedScene" uid="uid://dwycho4t12uio" path="res://ipit.tscn" id="4_0b4ue"]
+[ext_resource type="Texture2D" uid="uid://bv5wdhmwe8r5a" path="res://Shokat/anime-girl-cigs.png" id="4_i2t4f"]
+[ext_resource type="Texture2D" uid="uid://x8kmkn3x27g0" path="res://scenes/textbox.png" id="4_km5ld"]
+[ext_resource type="PackedScene" uid="uid://c1jqwc3ww7gf5" path="res://scenes/cig.tscn" id="4_n6hdu"]
+[ext_resource type="Script" uid="uid://b0wkjubvyov63" path="res://texture_rect.gd" id="5_8cye3"]
+[ext_resource type="Script" uid="uid://bjj83ct42pugh" path="res://randomi.gd" id="5_f2txt"]
 [ext_resource type="PackedScene" uid="uid://mpxqeo64o1c5" path="res://phone_ui.tscn" id="4_f2txt"]
 
 [sub_resource type="GDScript" id="GDScript_afelo"]
@@ -14,7 +19,7 @@ const IPIT = preload(\"uid://dwycho4t12uio\")
 @export var floor_block_scene: PackedScene
 @export var player: Node3D
 
-const TOTAL_BLOCKS = 20
+const TOTAL_BLOCKS = 100
 const BLOCK_SIZE = 4.0
 # Increase this from 2 to 6 or 8 so blocks don't disappear in front of the camera
 const VISIBLE_DISTANCE = 24.0 # 6 blocks * 4.0 size = 24 meters
@@ -54,8 +59,8 @@ func _spawn_enemy_3d() -> void:
 	var new_enemy = IPIT.instantiate()
 	
 	var random_x = randf_range(0, 0)
-	var random_z = randf_range(-30.0, -80.0) 
-	var spawn_position = Vector3(random_x, 0.0, random_z)
+	var random_z = randf_range(-10.0, -20.0) 
+	var spawn_position = Vector3(random_x, 0.0, player.global_position. z + random_z)
 	
 	new_enemy.global_position = spawn_position
 	add_child(new_enemy)
@@ -77,33 +82,80 @@ sky_rotation = Vector3(0, -2.459169, 0)
 [sub_resource type="GDScript" id="GDScript_f2txt"]
 script/source = "extends CanvasLayer
 
-@onready var dialogiyesno: Control = $dialogiyesno
-@onready var main: Node3D = $\"..\"
 
+@onready var gameover: Control = %gameover
+@onready var dialogi_good: Control = $UI/DialogiGood
+@onready var dialogiyesno: Control = %dialogiyesno
+@onready var main: Node3D = $\"..\"
+@onready var sprite_chance: Node3D = $\"../SpriteChance\"
+@onready var cig_counter: HBoxContainer = %CigCounter
+const CIG = preload(\"uid://c1jqwc3ww7gf5\")
+
+const MIRI_SHUME = preload(\"uid://cgyqlpbhrjmk4\")
+const KEQI = preload(\"uid://dpd6p52ixl31j\")
+const KEQISHUME = preload(\"uid://bk0ct5i0x0lq\")
+const MIRI = preload(\"uid://c2qet2ncpdtwh\")
 
 
 var isVisible = false 
 
-
-
 func ChangeVisibilityState(state):
 	dialogiyesno.visible = state
 
+
 func onAnswer() -> void:
-	Global.currentIpit.queue_free()
 	ChangeVisibilityState(false)
+	await get_tree().create_timer(2.0).timeout
+	Global.currentIpit.queue_free()
 	Global.playerCanMove = true
 	main._spawn_enemy_3d()
-
-
-
+	dialogi_good.visible = false
+	
 
 func _on_no_pressed() -> void:
 	onAnswer()
 
-
 func _on_yes_pressed() -> void:
 	onAnswer()
+	match sprite_chance.tipiShanca():
+		0:
+			gotCigi(2)
+			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = MIRI_SHUME
+			await get_tree().create_timer(2.0).timeout
+			dialogi_good.visible = true
+			await get_tree().create_timer(2.0).timeout
+			dialogi_good.visible = false
+		1:
+			gotCigi(1)
+			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = MIRI
+			await get_tree().create_timer(2.0).timeout
+			dialogi_good.visible = true
+			await get_tree().create_timer(2.0).timeout
+			dialogi_good.visible = false
+		2:
+			byeCigi(3)
+			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = KEQI
+		3:
+			byeCigi(2)
+			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = KEQISHUME
+		
+
+func gotCigi(ncigi:int):
+	
+	
+	for n in ncigi:
+		var cigarja = CIG.instantiate()
+		cig_counter.add_child(cigarja)
+		
+
+func byeCigi(ncigi:int):
+	
+	for n in ncigi:
+		if cig_counter.get_child(0) == null:
+			gameover.visible = true
+			return
+		cig_counter.get_child(0).queue_free()
+			
 "
 
 [node name="Level" type="Node3D" unique_id=181682921 node_paths=PackedStringArray("player")]
@@ -119,85 +171,192 @@ environment = SubResource("Environment_7exjq")
 [node name="DialogController2" type="CanvasLayer" parent="." unique_id=1759700172]
 script = SubResource("GDScript_f2txt")
 
-[node name="dialogiyesno" type="Control" parent="DialogController2" unique_id=942243043]
-visible = false
+[node name="UI" type="Control" parent="DialogController2" unique_id=1043648435]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 1
 
-[node name="Panel" type="Panel" parent="DialogController2/dialogiyesno" unique_id=2020335210]
+[node name="DialogiGood" type="Control" parent="DialogController2/UI" unique_id=1099572222]
+visible = false
+anchors_preset = 0
+offset_left = 5.0
+offset_top = 436.0
+offset_right = 1147.0
+offset_bottom = 650.0
+
+[node name="TextureRect" type="TextureRect" parent="DialogController2/UI/DialogiGood" unique_id=1308083853]
+layout_mode = 0
+offset_left = -50.0
+offset_top = -318.0
+offset_right = 1148.0
+offset_bottom = 257.0
+texture = ExtResource("4_km5ld")
+
+[node name="Miri" type="Label" parent="DialogController2/UI/DialogiGood" unique_id=1233709447]
+layout_mode = 0
+offset_left = 66.0
+offset_top = -131.0
+offset_right = 335.0
+offset_bottom = -28.0
+theme_override_font_sizes/font_size = 75
+text = "Miri"
+
+[node name="Take" type="Label" parent="DialogController2/UI/DialogiGood" unique_id=937064879]
+layout_mode = 0
+offset_left = 12.0
+offset_top = -4.0
+offset_right = 563.0
+offset_bottom = 128.0
+theme_override_font_sizes/font_size = 96
+text = "Take a migi!"
+
+[node name="DoraLevizje" type="Control" parent="DialogController2/UI" unique_id=1522482954]
+visible = false
+anchors_preset = 0
+offset_left = 6.0
+offset_top = 412.0
+offset_right = 1141.0
+offset_bottom = 646.0
+
+[node name="TextureRect" type="TextureRect" parent="DialogController2/UI/DoraLevizje" unique_id=2061615963]
+layout_mode = 0
+offset_left = 286.0
+offset_top = 12.0
+offset_right = 524.0
+offset_bottom = 234.0
+texture = ExtResource("4_i2t4f")
+script = ExtResource("5_8cye3")
+
+[node name="dialogiyesno" type="Control" parent="DialogController2/UI" unique_id=140057889]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 200.0
+offset_right = 12.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel2" type="Panel" parent="DialogController2/UI/dialogiyesno" unique_id=1712483353]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -332.0
-offset_top = -256.76
-offset_right = 332.0
-offset_bottom = -64.0
+offset_left = -573.0
+offset_top = -398.0
+offset_right = 565.0
+offset_bottom = -205.23999
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="No" type="Button" parent="DialogController2/dialogiyesno/Panel" unique_id=1018164932]
+[node name="TextureRect" type="TextureRect" parent="DialogController2/UI/dialogiyesno/Panel2" unique_id=23077354]
+layout_mode = 0
+offset_left = -28.0
+offset_top = -194.0
+offset_right = 1132.0
+offset_bottom = 228.0
+texture = ExtResource("4_km5ld")
+
+[node name="Yes" type="Button" parent="DialogController2/UI/dialogiyesno/Panel2" unique_id=2013648411]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 47.0
+offset_top = -63.76001
+offset_right = 102.0
+offset_bottom = -21.76001
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "Yes"
+
+[node name="No" type="Button" parent="DialogController2/UI/dialogiyesno/Panel2" unique_id=1099393061]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -55.0
-offset_top = -42.0
+offset_left = -73.0
+offset_top = -59.76001
+offset_right = -18.0
+offset_bottom = -17.76001
 grow_horizontal = 0
 grow_vertical = 0
 theme_override_font_sizes/font_size = 24
 text = "No
 "
 
-[node name="Yes" type="Button" parent="DialogController2/dialogiyesno/Panel" unique_id=362831403]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 609.0
-offset_top = -82.0
-offset_right = 664.0
-offset_bottom = -40.0
-grow_vertical = 0
-theme_override_font_sizes/font_size = 24
-text = "Yes"
-
-[node name="Label" type="Label" parent="DialogController2/dialogiyesno/Panel" unique_id=1184616847]
+[node name="Label" type="Label" parent="DialogController2/UI/dialogiyesno/Panel2" unique_id=9691365]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -330.0
-offset_top = -30.619995
-offset_right = 243.0
-offset_bottom = 32.380005
+offset_left = -306.0
+offset_top = -43.380005
+offset_right = 267.0
+offset_bottom = 19.619995
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 45
-text = "Can i ask you something?"
+text = "HEY"
 
-[node name="Label2" type="Label" parent="DialogController2/dialogiyesno/Panel" unique_id=1718179595]
+[node name="Label2" type="Label" parent="DialogController2/UI/dialogiyesno/Panel2" unique_id=1130739638]
 layout_mode = 1
-offset_right = 105.0
-offset_bottom = 106.0
+offset_left = 122.0
+offset_top = -57.0
+offset_right = 265.0
+offset_bottom = 49.0
 theme_override_font_sizes/font_size = 46
 text = "???"
 
+[node name="CigCounter" type="HBoxContainer" parent="DialogController2/UI" unique_id=186086567]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -214.0
+offset_top = 11.0
+offset_right = -27.0
+offset_bottom = 158.0
+grow_horizontal = 0
+alignment = 2
+
+[node name="cig4" parent="DialogController2/UI/CigCounter" unique_id=1094526930 instance=ExtResource("4_n6hdu")]
+layout_mode = 2
+
+[node name="cig3" parent="DialogController2/UI/CigCounter" unique_id=769523582 instance=ExtResource("4_n6hdu")]
+layout_mode = 2
+
+[node name="cig2" parent="DialogController2/UI/CigCounter" unique_id=1705312571 instance=ExtResource("4_n6hdu")]
+layout_mode = 2
+
+[node name="cig" parent="DialogController2/UI/CigCounter" unique_id=1364372331 instance=ExtResource("4_n6hdu")]
+layout_mode = 2
 [node name="PhoneUI" parent="." unique_id=833135230 node_paths=PackedStringArray("player") instance=ExtResource("4_f2txt")]
 player = NodePath("../CharacterBody3D")
 
 [node name="ipit" parent="." unique_id=543376239 instance=ExtResource("4_0b4ue")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0194471, -0.030465126, -22.09767)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.38035607, -0.8572912, -22.090158)
 
-[connection signal="pressed" from="DialogController2/dialogiyesno/Panel/No" to="DialogController2" method="_on_no_pressed"]
-[connection signal="pressed" from="DialogController2/dialogiyesno/Panel/Yes" to="DialogController2" method="_on_yes_pressed"]
+[node name="InitialSend" type="Node3D" parent="ipit" unique_id=791545001]
+
+[node name="SpriteChance" type="Node3D" parent="." unique_id=762704240]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0194471, 0.030465126, 22.09767)
+script = ExtResource("5_f2txt")
+
+[connection signal="pressed" from="DialogController2/UI/dialogiyesno/Panel2/Yes" to="DialogController2" method="_on_yes_pressed"]
+[connection signal="pressed" from="DialogController2/UI/dialogiyesno/Panel2/No" to="DialogController2" method="_on_no_pressed"]
