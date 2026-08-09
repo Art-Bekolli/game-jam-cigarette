@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://dwycho4t12uio"]
 
+[ext_resource type="Texture2D" uid="uid://cgyqlpbhrjmk4" path="res://anime_catgirl.png" id="1_5hgrc"]
+
 [sub_resource type="GDScript" id="GDScript_jmh37"]
 script/source = "extends StaticBody3D
 
@@ -39,9 +41,6 @@ func keqi():
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_edtrs"]
 size = Vector3(3.170227, 6.3621826, 2.8222656)
-
-[sub_resource type="BoxMesh" id="BoxMesh_e3hyo"]
-size = Vector3(4.9609375, 5.600464, 2.2114258)
 
 [sub_resource type="GDScript" id="GDScript_5hgrc"]
 script/source = "extends CanvasLayer
@@ -86,9 +85,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.482049, 1.6899223, -0.80634
 shape = SubResource("BoxShape3D_edtrs")
 debug_color = Color(0.9411765, 0, 0.61960787, 1)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1829053418]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9804688, 2.300232, -0.6057129)
-mesh = SubResource("BoxMesh_e3hyo")
+[node name="Sprite3D" type="Sprite3D" parent="CollisionShape3D" unique_id=1125777896]
+texture = ExtResource("1_5hgrc")
 
 [node name="DialogController" type="CanvasLayer" parent="." unique_id=152083373]
 script = SubResource("GDScript_5hgrc")

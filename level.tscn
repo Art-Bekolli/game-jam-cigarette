@@ -193,7 +193,7 @@ theme_override_font_sizes/font_size = 46
 text = "???"
 
 [node name="ipit" parent="." unique_id=543376239 instance=ExtResource("4_0b4ue")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0339861, -0.030465126, -22.110924)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0194471, -0.030465126, -22.09767)
 
 [connection signal="pressed" from="DialogController2/dialogiyesno/Panel/No" to="DialogController2" method="_on_no_pressed"]
 [connection signal="pressed" from="DialogController2/dialogiyesno/Panel/Yes" to="DialogController2" method="_on_yes_pressed"]
