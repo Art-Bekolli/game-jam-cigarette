@@ -3,10 +3,6 @@
 [ext_resource type="Texture2D" uid="uid://d4mlyetouhb0l" path="res://game-over-export.png" id="1_y26ei"]
 [ext_resource type="FontFile" uid="uid://c8u1x612uw6c8" path="res://rainyhearts.ttf" id="2_yxx3c"]
 
-[sub_resource type="QuadMesh" id="QuadMesh_5fit5"]
-
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_0g6dx"]
-
 [sub_resource type="GDScript" id="GDScript_7exjq"]
 script/source = "extends Button
 
@@ -22,28 +18,52 @@ func _pressed() -> void:
 	get_tree().change_scene_to_file(level_scene_path)
 "
 
-[node name="Game_over" type="Node2D" unique_id=666988157]
+[node name="Game_over" type="Control" unique_id=1133666346]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="MeshInstance2D" type="MeshInstance2D" parent="." unique_id=714220612]
-modulate = Color(0.06469653, 0.06469653, 0.06469653, 1)
-position = Vector2(576, 324)
-scale = Vector2(1152, 648)
-mesh = SubResource("QuadMesh_5fit5")
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1401234350]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
 
-[node name="StaticBody2D" type="StaticBody2D" parent="MeshInstance2D" unique_id=1185511409]
-physics_material_override = SubResource("PhysicsMaterial_0g6dx")
-
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=4351165]
-position = Vector2(577, 325.00003)
-scale = Vector2(1.6639999, 1.6640002)
-texture = ExtResource("1_y26ei")
-
-[node name="Button" type="Button" parent="." unique_id=2040230722]
-offset_left = 517.0
-offset_top = 529.0
-offset_right = 639.80646
-offset_bottom = 576.0
+[node name="Button" type="Button" parent="ColorRect" unique_id=2040230722]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -61.403015
+offset_top = -98.0
+offset_right = 61.40338
+offset_bottom = -51.0
+grow_horizontal = 2
+grow_vertical = 0
 theme_override_fonts/font = ExtResource("2_yxx3c")
 theme_override_font_sizes/font_size = 24
 text = "Try Again"
 script = SubResource("GDScript_7exjq")
+
+[node name="TextureRect" type="TextureRect" parent="ColorRect" unique_id=298403322]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -325.0
+offset_top = -232.0
+offset_right = 325.0
+offset_bottom = 232.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_y26ei")

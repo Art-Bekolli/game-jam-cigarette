@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="GameJam cigarette"
-run/main_scene="uid://ctqqxvvab6ujr"
+run/main_scene="uid://dtngdxshnn3u4"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
