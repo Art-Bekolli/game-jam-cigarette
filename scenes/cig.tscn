@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c1jqwc3ww7gf5"]
+
+[ext_resource type="Texture2D" uid="uid://etdnkk2goj8f" path="res://1cig.png" id="1_y0cgl"]
+
+[node name="cig" type="TextureRect" unique_id=1094526930]
+texture = ExtResource("1_y0cgl")
