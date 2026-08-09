@@ -99,6 +99,7 @@ script/source = "extends CanvasLayer
 @onready var dora_keqi: TextureRect = $UI/DoraKeqi
 @onready var dora_angk: TextureRect = $UI/DoraAngk
 @onready var dora_bobi: TextureRect = $UI/DoraBobi
+@onready var animated_sprite_3d_2: AnimatedSprite3D = $AnimatedSprite3D2
 
 @onready var reload: AnimatedSprite2D = %reload
 

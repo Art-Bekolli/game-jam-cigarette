@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dwycho4t12uio"]
 
-[ext_resource type="Texture2D" uid="uid://bklrvff0nx52m" path="res://rng_man_TEMPART.png" id="1_5hgrc"]
+[ext_resource type="Texture2D" uid="uid://c30urqbrdwbj3" path="res://rng_man(1).png" id="1_5hgrc"]
 
 [sub_resource type="GDScript" id="GDScript_jmh37"]
 script/source = "extends StaticBody3D
@@ -58,9 +58,9 @@ shape = SubResource("BoxShape3D_e3hyo")
 debug_color = Color(0, 0.6, 0.69803923, 1)
 script = SubResource("GDScript_ndypg")
 
-[node name="AnimatedSprite3D" type="Sprite3D" parent="." unique_id=291414946]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.482049, 1.6899223, 1.6156511)
-pixel_size = 0.017
+[node name="AnimatedSprite3D" type="Sprite3D" parent="." unique_id=877553795]
+transform = Transform3D(0.99999523, -0.00078754453, -0.002986232, 0.0007759216, 0.99999213, -0.003894921, 0.0029892733, 0.0038925875, 0.99998796, 0, 1.3921767, 0)
+pixel_size = 0.019
 texture = ExtResource("1_5hgrc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=669043999]
