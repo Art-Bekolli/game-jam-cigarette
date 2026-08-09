@@ -5,7 +5,6 @@
 [ext_resource type="Texture2D" uid="uid://cmg0trifydswj" path="res://transparent-smoke-swirling-gracefully-on-a-bright-transparent-background-creating-an-ethereal-and-fascinating-texture-transparent-smoke-texture-on-transparent-background-free-png.webp" id="3_01c0e"]
 [ext_resource type="Shader" uid="uid://c1l1jdul7h0eq" path="res://tipi-drunk.gdshader" id="3_j3erc"]
 [ext_resource type="AudioStream" uid="uid://oyiv0hgsici7" path="res://ambient maybe.wav" id="4_06o0c"]
-[ext_resource type="Texture2D" uid="uid://c1fxufruhwtyk" path="res://cigarette_box_sprite-Sheet.png" id="4_kjh0r"]
 [ext_resource type="AudioStream" uid="uid://bjxti56qldeji" path="res://main loop.wav" id="5_k3erj"]
 [ext_resource type="Texture2D" uid="uid://dljxheus1hqs0" path="res://tutorial.png" id="5_mk8l0"]
 [ext_resource type="FontFile" uid="uid://c8u1x612uw6c8" path="res://rainyhearts.ttf" id="6_unyr8"]
@@ -272,106 +271,6 @@ billboard_mode = 1
 [sub_resource type="QuadMesh" id="QuadMesh_5fit5"]
 material = SubResource("StandardMaterial3D_u1bes")
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_aicyk"]
-atlas = ExtResource("4_kjh0r")
-region = Rect2(450, 300, 150, 150)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_8b0r0"]
-atlas = ExtResource("4_kjh0r")
-region = Rect2(0, 0, 150, 150)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_h6smj"]
-atlas = ExtResource("4_kjh0r")
-region = Rect2(150, 0, 150, 150)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_v5j5c"]
-atlas = ExtResource("4_kjh0r")
-region = Rect2(300, 0, 150, 150)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_5pxul"]
-atlas = ExtResource("4_kjh0r")
-region = Rect2(450, 0, 150, 150)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_fedht"]
-atlas = ExtResource("4_kjh0r")
-region = Rect2(0, 150, 150, 150)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_4c15r"]
-atlas = ExtResource("4_kjh0r")
-region = Rect2(150, 150, 150, 150)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ait7k"]
-atlas = ExtResource("4_kjh0r")
-region = Rect2(300, 150, 150, 150)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_42xju"]
-atlas = ExtResource("4_kjh0r")
-region = Rect2(450, 150, 150, 150)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_v7sqt"]
-atlas = ExtResource("4_kjh0r")
-region = Rect2(0, 300, 150, 150)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ilwjd"]
-atlas = ExtResource("4_kjh0r")
-region = Rect2(150, 300, 150, 150)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_y3bce"]
-atlas = ExtResource("4_kjh0r")
-region = Rect2(300, 300, 150, 150)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_mk8l0"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_aicyk")
-}],
-"loop": 1,
-"name": &"nothin",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_8b0r0")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_h6smj")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_v5j5c")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_5pxul")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_fedht")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_4c15r")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ait7k")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_42xju")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_v7sqt")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ilwjd")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_y3bce")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_8b0r0")
-}],
-"loop": 0,
-"name": &"relad",
-"speed": 5.0
-}]
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gb7wt"]
 bg_color = Color(1, 1, 1, 1)
 
@@ -412,14 +311,6 @@ one_shot = true
 explosiveness = 0.8
 process_material = SubResource("ParticleProcessMaterial_7exjq")
 draw_pass_1 = SubResource("QuadMesh_5fit5")
-
-[node name="reload" type="AnimatedSprite3D" parent="Camera3D" unique_id=681741702]
-unique_name_in_owner = true
-transform = Transform3D(0.29999998, 0, 0, 0, 0.30000004, 0, 0, 0, 0.30000004, 0.9, 0, -0.845)
-fixed_size = true
-texture_filter = 0
-sprite_frames = SubResource("SpriteFrames_mk8l0")
-animation = &"relad"
 
 [node name="Sprite3D2" type="Sprite3D" parent="Camera3D" unique_id=1995065880]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1.6, -5)

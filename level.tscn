@@ -4,8 +4,16 @@
 [ext_resource type="PackedScene" uid="uid://b1fv0aqujjm3k" path="res://floor_block.tscn" id="1_vonw3"]
 [ext_resource type="Texture2D" uid="uid://dfbqv5ua0eotr" path="res://c58d078a-856c-4aed-9ff9-0bf536e245f2.jpg" id="3_oi3di"]
 [ext_resource type="PackedScene" uid="uid://dwycho4t12uio" path="res://ipit.tscn" id="4_0b4ue"]
-[ext_resource type="PackedScene" uid="uid://detaso3d5c7gq" path="res://phone_ui.tscn" id="4_f2txt"]
+[ext_resource type="PackedScene" uid="uid://mpxqeo64o1c5" path="res://phone_ui.tscn" id="4_f2txt"]
+[ext_resource type="Texture2D" uid="uid://dgqfpyimt2xv8" path="res://Shokat/evil_bob_hand.png" id="4_h6smj"]
+[ext_resource type="Texture2D" uid="uid://bv5wdhmwe8r5a" path="res://Shokat/anime-girl-cigs.png" id="4_i2t4f"]
+[ext_resource type="Texture2D" uid="uid://x8kmkn3x27g0" path="res://scenes/textbox.png" id="4_km5ld"]
+[ext_resource type="PackedScene" uid="uid://c1jqwc3ww7gf5" path="res://scenes/cig.tscn" id="4_n6hdu"]
+[ext_resource type="Script" uid="uid://b0wkjubvyov63" path="res://texture_rect.gd" id="5_8cye3"]
 [ext_resource type="Script" uid="uid://bjj83ct42pugh" path="res://randomi.gd" id="5_f2txt"]
+[ext_resource type="Texture2D" uid="uid://vvik2b0gn7pp" path="res://Shokat/angk_hand.png" id="6_v5j5c"]
+[ext_resource type="Texture2D" uid="uid://c1fxufruhwtyk" path="res://cigarette_box_sprite-Sheet.png" id="8_2orkt"]
+[ext_resource type="Texture2D" uid="uid://br4y2xgiepour" path="res://Shokat/good_bob_cigs.png" id="9_5pxul"]
 
 [sub_resource type="GDScript" id="GDScript_afelo"]
 script/source = "extends Node3D
@@ -75,6 +83,269 @@ background_mode = 2
 sky = SubResource("Sky_0g6dx")
 sky_rotation = Vector3(0, -2.459169, 0)
 
+[sub_resource type="GDScript" id="GDScript_f2txt"]
+script/source = "extends CanvasLayer
+
+@onready var dialogi_bad: Control = $UI/DialogiBad
+@onready var gameover: Control = %gameover
+@onready var dialogi_good: Control = $UI/DialogiGood
+@onready var dialogiyesno: Control = %dialogiyesno
+@onready var main: Node3D = $\"..\"
+@onready var sprite_chance: Node3D = $\"../SpriteChance\"
+@onready var cig_counter: HBoxContainer = %CigCounter
+@onready var dora_maci: TextureRect = $UI/DoraMaci
+@onready var give: Label = $UI/DialogiBad/Give
+@onready var take: Label = $UI/DialogiGood/Take
+@onready var dora_keqi: TextureRect = $UI/DoraKeqi
+@onready var dora_angk: TextureRect = $UI/DoraAngk
+@onready var dora_bobi: TextureRect = $UI/DoraBobi
+@onready var animated_sprite_3d_2: AnimatedSprite3D = $AnimatedSprite3D2
+
+@onready var reload: AnimatedSprite2D = %reload
+
+const CIG = preload(\"uid://c1jqwc3ww7gf5\")
+
+var mir2:Array[String] = [
+\"Hey, long time no see!\",
+\"Only ten miles to heaven.\",
+\"Here, have a cigarette from me, I hope you get there. Don’t mention it.\",
+\"Here, have a cig!\",
+\"Have a cig!\",
+\"Kiss me!\",
+\"You’re beautiful.\",
+\"You want a ciggy?\",
+\"Hold on. Hang on. Hang on.\",
+\"Have a cig.\"
+]
+
+var mir1:Array[String] = [
+\"What’s woung with youw face? You’we aaaall messed up.\",
+\"Uhhh have this I found it on the ground. Weiwdo\",
+\"You dwopped something, no wait, its mine, you can have it anyway!\",
+\"Shhh, don’t tell anywone I gave you this. Hehehehe.\",
+\"Is it stiwww night? Gosh! Fees wike it’s been night fowevew. Anyway! Here!\",
+\"I found a whole box of these once next to my dad’s gun, you can have one!\",
+\"Evewybody’s inside, ya know?! Anyway, I dunno, here!\"
+]
+
+
+var keqi1:Array[String] = [
+\"Nevermind all that!\",
+\". . . I know you have  one, give it here.\",
+\"Hand over a cigarette, buddy.\",
+\"Pass a cig.\",
+\"I offer you hope!\",
+\"Give me a ciggy as payment.\"
+]
+
+var keqi2:Array[String] = [
+\"Humanity needs beauty\",
+\"Humanity needs symbolism.\",
+\"Criminal scum.\",
+\"Holy Child, Hanging High.\",
+\"Godless bastard, give me all you have!\",
+\"Stop right there, you apostle of heresy.\",
+\"Good Friday.\",
+\"Everyone’s sinned by the time I get to them.\",
+\"Pay in blood.\"
+]
+
+
+const MIRI_SHUME = preload(\"uid://cgyqlpbhrjmk4\")
+const KEQI = preload(\"uid://dpd6p52ixl31j\")
+const KEQISHUME = preload(\"uid://bk0ct5i0x0lq\")
+const MIRI = preload(\"uid://c2qet2ncpdtwh\")
+
+
+var isVisible = false 
+
+func ChangeVisibilityState(state):
+	dialogiyesno.visible = state
+
+
+func onAnswer() -> void:
+	ChangeVisibilityState(false)
+	await get_tree().create_timer(2.5).timeout
+	Global.currentIpit.queue_free()
+	Global.playerCanMove = true
+	main._spawn_enemy_3d()
+	dialogi_good.visible = false 
+
+func _on_no_pressed() -> void:
+	onAnswer()
+
+func _on_yes_pressed() -> void:
+	onAnswer()
+	match sprite_chance.tipiShanca():
+		0:
+			gotCigi(2)
+			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = MIRI_SHUME
+			take.text = mir1[randi_range(0,mir1.size() - 1)]
+			
+			dialogi_good.visible = true
+			await get_tree().create_timer(.3).timeout
+			dora_maci.visible = true
+			await get_tree().create_timer(2.2).timeout
+			dialogi_good.visible = false
+			dora_maci.visible = false
+			
+		1:
+			gotCigi(1)
+			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = MIRI
+			take.text = mir2[randi_range(0,mir2.size() - 1)]
+			dialogi_good.visible = true
+			await get_tree().create_timer(.3).timeout
+			dora_bobi.visible = true
+			await get_tree().create_timer(2.2).timeout
+			dialogi_good.visible = false
+			dora_bobi.visible = false
+		2:
+			byeCigi(1)
+			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = KEQI
+			give.text = keqi1[randi_range(0,keqi1.size() - 1)]
+			dialogi_bad.visible = true
+			await get_tree().create_timer(.3).timeout
+			dora_keqi.visible = true
+			await get_tree().create_timer(2.2).timeout
+			dialogi_bad.visible = false
+			dora_keqi.visible = false
+		3:
+			byeCigi(2)
+			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = KEQISHUME
+			
+			give.text = keqi2[randi_range(0,keqi2.size() - 1)]
+			dialogi_bad.visible = true
+			await get_tree().create_timer(.3).timeout
+			dora_angk.visible = true
+			await get_tree().create_timer(2.2).timeout
+			dialogi_bad.visible = false
+			dora_angk.visible = false
+		
+
+func gotCigi(ncigi:int):
+	for n in ncigi:
+		reload.visible = true
+		reload.play_backwards(\"relad\")
+		var cigarja = CIG.instantiate()
+		cig_counter.add_child(cigarja)
+		await get_tree().create_timer(1.5).timeout
+		reload.visible = false
+		
+
+func byeCigi(ncigi:int):
+	
+	for n in ncigi:
+		reload.visible = true
+		reload.play(\"relad\")
+		if cig_counter.get_child(0) == null:
+			gameover.visible = true
+			return
+		cig_counter.get_child(0).queue_free()
+		await get_tree().create_timer(1.5).timeout
+		reload.visible = false
+		
+"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_aicyk"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(450, 300, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8b0r0"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(0, 0, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h6smj"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(150, 0, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v5j5c"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(300, 0, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5pxul"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(450, 0, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fedht"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(0, 150, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4c15r"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(150, 150, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ait7k"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(300, 150, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_42xju"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(450, 150, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v7sqt"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(0, 300, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ilwjd"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(150, 300, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y3bce"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(300, 300, 150, 150)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_edtrs"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_aicyk")
+}],
+"loop": 1,
+"name": &"nothin",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8b0r0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h6smj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v5j5c")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5pxul")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fedht")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4c15r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ait7k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_42xju")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v7sqt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ilwjd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y3bce")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8b0r0")
+}],
+"loop": 0,
+"name": &"relad",
+"speed": 5.0
+}]
+
 [node name="Level" type="Node3D" unique_id=181682921 node_paths=PackedStringArray("player")]
 script = SubResource("GDScript_afelo")
 floor_block_scene = ExtResource("1_vonw3")
@@ -84,6 +355,269 @@ player = NodePath("CharacterBody3D")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=123971115]
 environment = SubResource("Environment_7exjq")
+
+[node name="DialogController2" type="CanvasLayer" parent="." unique_id=1759700172]
+script = SubResource("GDScript_f2txt")
+
+[node name="UI" type="Control" parent="DialogController2" unique_id=1043648435]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -5.0
+offset_top = -2.0
+offset_right = -5.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="DoraBobi" type="TextureRect" parent="DialogController2/UI" unique_id=419675170]
+visible = false
+z_index = -1
+layout_mode = 0
+offset_left = 311.0
+offset_top = 293.0
+offset_right = 549.0001
+offset_bottom = 514.99976
+texture = ExtResource("9_5pxul")
+script = ExtResource("5_8cye3")
+
+[node name="DoraKeqi" type="TextureRect" parent="DialogController2/UI" unique_id=1632521306]
+visible = false
+layout_mode = 0
+offset_left = 310.0
+offset_top = 293.0
+offset_right = 548.0001
+offset_bottom = 514.99976
+texture = ExtResource("4_h6smj")
+script = ExtResource("5_8cye3")
+
+[node name="DoraAngk" type="TextureRect" parent="DialogController2/UI" unique_id=621765715]
+visible = false
+layout_mode = 0
+offset_left = 352.0
+offset_top = 281.0
+offset_right = 502.0
+offset_bottom = 431.0
+texture = ExtResource("6_v5j5c")
+
+[node name="DialogiBad" type="Control" parent="DialogController2/UI" unique_id=204823836]
+visible = false
+anchors_preset = 0
+offset_left = 5.0
+offset_top = 436.0
+offset_right = 1147.0
+offset_bottom = 650.0
+
+[node name="TextureRect" type="TextureRect" parent="DialogController2/UI/DialogiBad" unique_id=1955114285]
+layout_mode = 0
+offset_left = -20.0
+offset_top = -183.0
+offset_right = 1148.0
+offset_bottom = 257.0
+texture = ExtResource("4_km5ld")
+
+[node name="Keqi" type="Label" parent="DialogController2/UI/DialogiBad" unique_id=1237863698]
+layout_mode = 0
+offset_left = 104.0
+offset_top = -40.0
+offset_right = 373.0
+offset_bottom = 63.0
+theme_override_font_sizes/font_size = 45
+text = "Keqi"
+
+[node name="Give" type="Label" parent="DialogController2/UI/DialogiBad" unique_id=1885810132]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -164.0
+offset_top = -35.0
+offset_right = 387.0
+offset_bottom = 97.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 45
+text = "Give a migi!"
+
+[node name="DialogiGood" type="Control" parent="DialogController2/UI" unique_id=1099572222]
+visible = false
+anchors_preset = 0
+offset_left = 5.0
+offset_top = 436.0
+offset_right = 1147.0
+offset_bottom = 650.0
+
+[node name="TextureRect" type="TextureRect" parent="DialogController2/UI/DialogiGood" unique_id=1308083853]
+layout_mode = 0
+offset_left = -20.0
+offset_top = -183.0
+offset_right = 1148.0
+offset_bottom = 257.0
+texture = ExtResource("4_km5ld")
+
+[node name="Miri" type="Label" parent="DialogController2/UI/DialogiGood" unique_id=1233709447]
+layout_mode = 0
+offset_left = 104.0
+offset_top = -40.0
+offset_right = 373.0
+offset_bottom = 63.0
+theme_override_font_sizes/font_size = 45
+text = "Miri"
+
+[node name="Take" type="Label" parent="DialogController2/UI/DialogiGood" unique_id=937064879]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -164.0
+offset_top = -35.0
+offset_right = 387.0
+offset_bottom = 97.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 45
+text = "Take a migi!"
+
+[node name="dialogiyesno" type="Control" parent="DialogController2/UI" unique_id=140057889]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 200.0
+offset_right = 12.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel2" type="Panel" parent="DialogController2/UI/dialogiyesno" unique_id=1712483353]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -573.0
+offset_top = -398.0
+offset_right = 565.0
+offset_bottom = -205.23999
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="TextureRect" type="TextureRect" parent="DialogController2/UI/dialogiyesno/Panel2" unique_id=23077354]
+layout_mode = 0
+offset_left = -28.0
+offset_top = -194.0
+offset_right = 1132.0
+offset_bottom = 228.0
+texture = ExtResource("4_km5ld")
+
+[node name="Yes" type="Button" parent="DialogController2/UI/dialogiyesno/Panel2" unique_id=2013648411]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 47.0
+offset_top = -63.76001
+offset_right = 102.0
+offset_bottom = -21.76001
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "Yes"
+
+[node name="No" type="Button" parent="DialogController2/UI/dialogiyesno/Panel2" unique_id=1099393061]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -73.0
+offset_top = -59.76001
+offset_right = -18.0
+offset_bottom = -17.76001
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "No
+"
+
+[node name="Label" type="Label" parent="DialogController2/UI/dialogiyesno/Panel2" unique_id=9691365]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -306.0
+offset_top = -43.380005
+offset_right = 267.0
+offset_bottom = 19.619995
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 45
+text = "HEY"
+
+[node name="Label2" type="Label" parent="DialogController2/UI/dialogiyesno/Panel2" unique_id=1130739638]
+layout_mode = 1
+offset_left = 122.0
+offset_top = -57.0
+offset_right = 265.0
+offset_bottom = 49.0
+theme_override_font_sizes/font_size = 46
+text = "???"
+
+[node name="DoraMaci" type="TextureRect" parent="DialogController2/UI" unique_id=2061615963]
+visible = false
+z_index = -1
+layout_mode = 0
+offset_left = 308.0
+offset_top = 296.0
+offset_right = 546.0001
+offset_bottom = 517.99976
+texture = ExtResource("4_i2t4f")
+script = ExtResource("5_8cye3")
+
+[node name="CigCounter" type="HBoxContainer" parent="DialogController2/UI" unique_id=186086567]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -214.0
+offset_top = 11.0
+offset_right = -27.0
+offset_bottom = 158.0
+grow_horizontal = 0
+alignment = 2
+
+[node name="cig4" parent="DialogController2/UI/CigCounter" unique_id=1094526930 instance=ExtResource("4_n6hdu")]
+layout_mode = 2
+
+[node name="cig3" parent="DialogController2/UI/CigCounter" unique_id=769523582 instance=ExtResource("4_n6hdu")]
+layout_mode = 2
+
+[node name="cig2" parent="DialogController2/UI/CigCounter" unique_id=1705312571 instance=ExtResource("4_n6hdu")]
+layout_mode = 2
+
+[node name="cig" parent="DialogController2/UI/CigCounter" unique_id=1364372331 instance=ExtResource("4_n6hdu")]
+layout_mode = 2
+
+[node name="reload" type="AnimatedSprite2D" parent="DialogController2/UI" unique_id=1445284918]
+unique_name_in_owner = true
+visible = false
+position = Vector2(1090, 281)
+scale = Vector2(-1, 1)
+sprite_frames = SubResource("SpriteFrames_edtrs")
+animation = &"relad"
 
 [node name="PhoneUI" parent="." unique_id=833135230 node_paths=PackedStringArray("player") instance=ExtResource("4_f2txt")]
 player = NodePath("../CharacterBody3D")
@@ -96,3 +630,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20701551, -0.28632545, -22.
 [node name="SpriteChance" type="Node3D" parent="." unique_id=762704240]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0194471, 0.030465126, 22.09767)
 script = ExtResource("5_f2txt")
+
+[connection signal="pressed" from="DialogController2/UI/dialogiyesno/Panel2/Yes" to="DialogController2" method="_on_yes_pressed"]
+[connection signal="pressed" from="DialogController2/UI/dialogiyesno/Panel2/No" to="DialogController2" method="_on_no_pressed"]
