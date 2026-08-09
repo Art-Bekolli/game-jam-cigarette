@@ -2,14 +2,14 @@ extends Node3D
 
 @onready var dialog_controller: CanvasLayer = $"../../DialogController2"
 
+var shanca = {
+	"Miri": 800,
+	"MiriShume": 200,
+	"Keqi": 500,
+	"KeqiShume": 150
+}
 
 func tipiShanca() -> int:
-	var shanca = {
-		"Miri": 800,
-		"MiriShume": 200,
-		"Keqi": 500,
-		"KeqiShume": 150
-	}
 
 	var rng = RandomNumberGenerator.new()
 	rng.randomize()
