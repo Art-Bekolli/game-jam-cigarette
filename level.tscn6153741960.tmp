@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://ctqqxvvab6ujr"]
+
+[ext_resource type="PackedScene" uid="uid://ww0l3g2c12mb" path="res://tipi.tscn" id="1_u52ul"]
+[ext_resource type="PackedScene" uid="uid://b1fv0aqujjm3k" path="res://floor_block.tscn" id="1_vonw3"]
+[ext_resource type="Texture2D" uid="uid://dfbqv5ua0eotr" path="res://c58d078a-856c-4aed-9ff9-0bf536e245f2.jpg" id="3_oi3di"]
+[ext_resource type="PackedScene" uid="uid://dwycho4t12uio" path="res://ipit.tscn" id="4_0b4ue"]
+[ext_resource type="PackedScene" uid="uid://detaso3d5c7gq" path="res://phone_ui.tscn" id="4_f2txt"]
+[ext_resource type="Script" uid="uid://bjj83ct42pugh" path="res://randomi.gd" id="5_f2txt"]
+
+[sub_resource type="GDScript" id="GDScript_afelo"]
+script/source = "extends Node3D
+
+const IPIT = preload(\"uid://dwycho4t12uio\")
+@onready var ipit: StaticBody3D = $ipit 
+@export var floor_block_scene: PackedScene
+@export var player: Node3D
+
+const TOTAL_BLOCKS = 100
+const BLOCK_SIZE = 4.0
+# Increase this from 2 to 6 or 8 so blocks don't disappear in front of the camera
+const VISIBLE_DISTANCE = 24.0 # 6 blocks * 4.0 size = 24 meters
+
+var spawned_blocks: Array[Node3D] = []
+var min_time: float = 1.0
+var max_time: float = 2.0
+
+
+
+func _ready():
+	if not floor_block_scene:
+		push_error(\"Please assign FloorBlock.tscn to the Inspector!\")
+		return
+		
+	for i in range(TOTAL_BLOCKS):
+		var block = floor_block_scene.instantiate() as Node3D
+		add_child(block)
+		block.position = Vector3(0, 0, -i * BLOCK_SIZE)
+		spawned_blocks.append(block)
+
+func _process(_delta):
+	if not player:
+		return
+
+	for block in spawned_blocks:
+		# Calculate actual 3D distance between player and block
+		var dist = player.global_position.distance_to(block.global_position)
+		
+		# Show if within range
+		block.visible = dist <= VISIBLE_DISTANCE
+		
+
+
+func _spawn_enemy_3d() -> void:
+	await get_tree().create_timer(randf_range(min_time, max_time)).timeout
+	var new_enemy = IPIT.instantiate()
+	
+	var random_x = randf_range(0, 0)
+	var random_z = randf_range(-10.0, -20.0) 
+	var spawn_position = Vector3(random_x, 0.0, player.global_position. z + random_z)
+	
+	new_enemy.global_position = spawn_position
+	add_child(new_enemy)
+	
+	new_enemy.chance =+ .05
+"
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_mqlib"]
+panorama = ExtResource("3_oi3di")
+
+[sub_resource type="Sky" id="Sky_0g6dx"]
+sky_material = SubResource("PanoramaSkyMaterial_mqlib")
+
+[sub_resource type="Environment" id="Environment_7exjq"]
+background_mode = 2
+sky = SubResource("Sky_0g6dx")
+sky_rotation = Vector3(0, -2.459169, 0)
+
+[node name="Level" type="Node3D" unique_id=181682921 node_paths=PackedStringArray("player")]
+script = SubResource("GDScript_afelo")
+floor_block_scene = ExtResource("1_vonw3")
+player = NodePath("CharacterBody3D")
+
+[node name="CharacterBody3D" parent="." unique_id=504771904 instance=ExtResource("1_u52ul")]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=123971115]
+environment = SubResource("Environment_7exjq")
+
+[node name="PhoneUI" parent="." unique_id=833135230 node_paths=PackedStringArray("player") instance=ExtResource("4_f2txt")]
+player = NodePath("../CharacterBody3D")
+
+[node name="ipit" parent="." unique_id=543376239 instance=ExtResource("4_0b4ue")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20701551, -0.28632545, -22.090158)
+
+[node name="InitialSend" type="Node3D" parent="ipit" unique_id=791545001]
+
+[node name="SpriteChance" type="Node3D" parent="." unique_id=762704240]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0194471, 0.030465126, 22.09767)
+script = ExtResource("5_f2txt")

@@ -2,9 +2,12 @@
 
 [ext_resource type="Texture2D" uid="uid://jomoeraaogka" path="res://hand-new.png" id="1_j3erc"]
 [ext_resource type="Texture2D" uid="uid://ce7y8fpckake" path="res://smokinghand.png" id="2_j3erc"]
+[ext_resource type="Texture2D" uid="uid://cmg0trifydswj" path="res://transparent-smoke-swirling-gracefully-on-a-bright-transparent-background-creating-an-ethereal-and-fascinating-texture-transparent-smoke-texture-on-transparent-background-free-png.webp" id="3_01c0e"]
 [ext_resource type="Shader" uid="uid://c1l1jdul7h0eq" path="res://tipi-drunk.gdshader" id="3_j3erc"]
 [ext_resource type="AudioStream" uid="uid://oyiv0hgsici7" path="res://ambient maybe.wav" id="4_06o0c"]
 [ext_resource type="AudioStream" uid="uid://bjxti56qldeji" path="res://main loop.wav" id="5_k3erj"]
+[ext_resource type="Texture2D" uid="uid://dljxheus1hqs0" path="res://tutorial.png" id="5_mk8l0"]
+[ext_resource type="FontFile" uid="uid://c8u1x612uw6c8" path="res://rainyhearts.ttf" id="6_unyr8"]
 
 [sub_resource type="GDScript" id="GDScript_7exjq"]
 resource_name = "tipi"
@@ -13,16 +16,20 @@ script/source = "extends CharacterBody3D
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
 var gravity = ProjectSettings.get_setting(\"physics/3d/default_gravity\")
+
 @onready var ambient_audio: AudioStreamPlayer = $Ambient
 @onready var main_theme: AudioStreamPlayer = $\"Main Theme\"
+
 # --- UI Variables ---
 @onready var smoke_bar: ProgressBar = %smoke_bar
+@onready var smoke_particles: GPUParticles3D = $Camera3D/SmokeParticles
+@onready var reload_sprite_3d: AnimatedSprite3D = $Camera3D/reloads
 
 # Sprite Textures
 @export var default_texture: Texture2D
 @export var smoking_texture: Texture2D
 
-# Smoking Mechanic Variables
+# --- Smoking Mechanic Variables ---
 var is_smoking = false
 var smoke_meter: float = 100.0
 const MAX_SMOKE = 100.0
@@ -30,20 +37,25 @@ const DRAG_SENSITIVITY = 0.5
 const DECAY_RATE: float = 8.0
 var is_phone_talking: bool = false
 
+# --- Drag Distance Mechanic ---
+const MAX_DRAG: float = 70.0
+var drag_accumulated: float = 0.0
+var has_consumed_this_drag: bool = false
+
 # --- Drunk Tilt / Balance Mechanics ---
-var tilt_angle: float = 0.0            # Current roll angle in degrees (- Left, + Right)
-var tilt_target_dir: int = 0           # -1 = Falling Left, 1 = Falling Right, 0 = Upright
-var tilt_timer: float = 2.0            # Delay before next stumble
-const MAX_TILT: float = 45.0           # Maximum angle before player falls completely
-const TILT_FALL_SPEED: float = 12.0    # Degrees per second the camera tilts (slowly falls over)
-const MASH_RECOVERY: float = 3.0      # Degrees recovered per button tap
-var visual_tilt: float = 0.0           # The smoothed angle the camera actually renders
-const TILT_SMOOTHING: float = 12.0     # How fast the camera catches up (lower = floatier, higher = snappier)
+var tilt_angle: float = 0.0
+var tilt_target_dir: int = 0
+var tilt_timer: float = 2.0
+const MAX_TILT: float = 45.0
+const TILT_FALL_SPEED: float = 12.0
+const MASH_RECOVERY: float = 3.0
+var visual_tilt: float = 0.0
+const TILT_SMOOTHING: float = 12.0
 
 # --- Fail State Variables ---
 var is_failed: bool = false
 var fall_timer: float = 0.0
-const GROUND_EYE_HEIGHT: float = 0.3   # Height camera drops to when collapsed
+const GROUND_EYE_HEIGHT: float = 0.3
 
 # Idle / Walk Bobbing & Ambient Sway
 const IDLE_BOB_FREQ = 2.0
@@ -64,6 +76,22 @@ func _ready():
 		smoke_bar.value = smoke_meter
 	ambient_audio.play()
 	main_theme.play()
+	
+	if reload_sprite_3d:
+		reload_sprite_3d.visible = false
+		reload_sprite_3d.animation_finished.connect(_on_reload_animation_finished)
+
+func play_reload_animation(backwards: bool = false) -> void:
+	if reload_sprite_3d:
+		reload_sprite_3d.visible = true
+		if backwards:
+			reload_sprite_3d.play_backwards(\"relad\")
+		else:
+			reload_sprite_3d.play(\"relad\")
+
+func _on_reload_animation_finished() -> void:
+	reload_sprite_3d.visible = false
+
 func _unhandled_input(event):
 	if is_failed:
 		return
@@ -73,34 +101,45 @@ func _unhandled_input(event):
 		is_smoking = event.pressed
 		if is_smoking:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+			drag_accumulated = 0.0
+			has_consumed_this_drag = false
 			if smoking_texture:
 				sprite_3d.texture = smoking_texture
 		else:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 			if default_texture:
 				sprite_3d.texture = default_texture
+			
+			# Blow smoke on release
+			if smoke_particles:
+				smoke_particles.restart()
 
 	if event is InputEventMouseMotion and is_smoking:
 		if event.relative.y > 0:
+			drag_accumulated += event.relative.y
+			
+			if drag_accumulated >= MAX_DRAG and not has_consumed_this_drag:
+				_consume_cigarette()
+				has_consumed_this_drag = true
+				
 			smoke_meter = clamp(smoke_meter + (event.relative.y * (DRAG_SENSITIVITY * 0.005)), 0.0, MAX_SMOKE)
 
 	# --- Button Mashing to Upright Character ---
 	if tilt_target_dir != 0:
-		# If toppling LEFT (-1), tilt_angle is negative. Mash RIGHT to add positive recovery.
 		if tilt_target_dir == -1 and event.is_action_pressed(\"left\"):
 			tilt_angle += MASH_RECOVERY
-			if tilt_angle > 0: tilt_angle = 0 # Don't over-correct past center
+			if tilt_angle > 0:
+				tilt_angle = 0
 			
-		# If toppling RIGHT (1), tilt_angle is positive. Mash LEFT to subtract recovery.
 		elif tilt_target_dir == 1 and event.is_action_pressed(\"right\"):
 			tilt_angle -= MASH_RECOVERY
-			if tilt_angle < 0: tilt_angle = 0 # Don't over-correct past center
+			if tilt_angle < 0:
+				tilt_angle = 0
 
-		# If we successfully leveled out (back to 0)
 		if abs(tilt_angle) <= 0.5:
 			tilt_angle = 0.0
 			tilt_target_dir = 0
-			tilt_timer = randf_range(2.0, 5.0) # Set timer for the next random topple
+			tilt_timer = randf_range(2.0, 5.0)
 
 	if Input.is_action_just_pressed(\"ui_cancel\"):
 		get_tree().quit()
@@ -111,22 +150,17 @@ func _physics_process(delta):
 		velocity.x = 0
 		velocity.z = 0
 		
-		# Drop camera down to floor height and roll sideways
 		camera.position.y = move_toward(camera.position.y, GROUND_EYE_HEIGHT, delta * 3.0)
 		camera.rotation_degrees.z = move_toward(camera.rotation_degrees.z, sign(tilt_angle) * 75.0, delta * 120.0)
 		camera.rotation_degrees.x = move_toward(camera.rotation_degrees.x, -15.0, delta * 60.0)
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		get_tree().change_scene_to_file(\"res://game_over.tscn\") # Adjust path if in a subfolder like res://scenes/game_over.tscn
+		get_tree().change_scene_to_file(\"res://game_over.tscn\")
 			
-		# Transition to Game Over scene after collapse animation finishes (2 seconds)
 		fall_timer += delta
-	
-			# Restore mouse cursor visibility for the 2D Game Over UI
-
 		move_and_slide()
 		return
+
 	# --- Normal Game Loop ---
-	# If on the phone, multiply the decay rate by 3 (adjust as needed)
 	var current_decay = DECAY_RATE * 2.0 if is_phone_talking else DECAY_RATE
 	smoke_meter = max(smoke_meter - (current_decay * delta), 0.0)
 
@@ -138,24 +172,16 @@ func _physics_process(delta):
 
 	_process_drunk_tilt(delta)
 
-	if Global.playerCanMove: 
+	if Global.playerCanMove:
 		var input_dir = Input.get_axis(\"forward\", \"back\")
 		var direction = (transform.basis * Vector3(0, 0, input_dir)).normalized()
 		
-		if Global.playerCanMove: 
-			if direction:
-				velocity.x = direction.x * SPEED
-				velocity.z = direction.z * SPEED
-			else:
-				velocity.x = move_toward(velocity.x, 0, SPEED)
-				velocity.z = move_toward(velocity.z, 0, SPEED)
-
-		_handle_hand_bob(delta)
-	
-		if smoke_bar:
-			smoke_bar.value = smoke_meter
-			
-			
+		if direction:
+			velocity.x = direction.x * SPEED
+			velocity.z = direction.z * SPEED
+		else:
+			velocity.x = move_toward(velocity.x, 0, SPEED)
+			velocity.z = move_toward(velocity.z, 0, SPEED)
 
 	_handle_hand_bob(delta)
 	_handle_camera_tilt_and_sway(delta)
@@ -163,24 +189,31 @@ func _physics_process(delta):
 	if smoke_bar:
 		smoke_bar.value = smoke_meter
 
-	# Fail condition if smoke runs out
 	if smoke_meter <= 0.0:
 		is_failed = true
 
 	move_and_slide()
 
+# --- Custom Helper Functions ---
+
+func _consume_cigarette() -> void:
+	var dialog_controller = get_tree().get_first_node_in_group(\"dialog_controller\")
+	
+	if not dialog_controller:
+		dialog_controller = get_tree().root.get_node_or_null(\"Level/DialogController2\")
+		
+	if dialog_controller and dialog_controller.has_method(\"byeCigi\"):
+		dialog_controller.byeCigi(1)
+
 func _process_drunk_tilt(delta: float):
 	if tilt_target_dir == 0:
-		# Wait for timer to trigger next random topple direction
 		tilt_timer -= delta
 		if tilt_timer <= 0.0:
 			tilt_target_dir = -1 if randf() < 0.5 else 1
 	else:
-		# Slowly pull character over until player mashes key
 		tilt_angle += tilt_target_dir * TILT_FALL_SPEED * delta
 		tilt_angle = clamp(tilt_angle, -MAX_TILT, MAX_TILT)
 		
-		# Check if player failed to mash in time and hit max tilt (45 degrees)
 		if abs(tilt_angle) >= MAX_TILT:
 			is_failed = true
 
@@ -195,20 +228,48 @@ func _handle_hand_bob(delta):
 	sprite_3d.position.y = default_sprite_pos.y + sin(bob_time) * current_amp
 
 func _handle_camera_tilt_and_sway(delta):
-	# 1. Smoothly glide the visual_tilt toward the actual mechanical tilt_angle
 	visual_tilt = lerp(visual_tilt, tilt_angle, delta * TILT_SMOOTHING)
 
-	# 2. Calculate ambient drunk wobble
 	sway_time += delta * 0.7
 	var ambient_sway = sin(sway_time * 1.5) * 2.0
 	var ambient_pitch = cos(sway_time * 1.1) * 1.5
 	
-	# 3. Apply the smoothed visual_tilt instead of the raw, snappy tilt_angle
 	camera.rotation_degrees.z = visual_tilt + ambient_sway
 	camera.rotation_degrees.x = ambient_pitch
 "
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_0g6dx"]
+
+[sub_resource type="Gradient" id="Gradient_k3erj"]
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_mqlib"]
+gradient = SubResource("Gradient_k3erj")
+
+[sub_resource type="Curve" id="Curve_01c0e"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_0g6dx"]
+curve = SubResource("Curve_01c0e")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_7exjq"]
+direction = Vector3(0, 0, -1)
+spread = 20.0
+initial_velocity_min = 1.0
+initial_velocity_max = 2.0
+gravity = Vector3(0, 0.5, 0)
+scale_curve = SubResource("CurveTexture_0g6dx")
+color_ramp = SubResource("GradientTexture1D_mqlib")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u1bes"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 0.23921569)
+albedo_texture = ExtResource("3_01c0e")
+billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_5fit5"]
+material = SubResource("StandardMaterial3D_u1bes")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gb7wt"]
 bg_color = Color(1, 1, 1, 1)
@@ -224,6 +285,7 @@ shader_parameter/wave_amplitude = 0.015
 shader_parameter/chromatic_aberration = 0.008
 
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=504771904]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0, 0)
 script = SubResource("GDScript_7exjq")
 default_texture = ExtResource("1_j3erc")
 smoking_texture = ExtResource("2_j3erc")
@@ -233,12 +295,52 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3006277, 0)
 shape = SubResource("CapsuleShape3D_0g6dx")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=2037490821]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7640715, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.40689516, 1.45804, -1.207653)
+near = 0.017
 
 [node name="Sprite3D" type="Sprite3D" parent="Camera3D" unique_id=1091200180]
 transform = Transform3D(0.039416313, -0.0068083797, 0, 0.0068083797, 0.039416313, 0, 0, 0, 0.04, 0.05, -0.03, -0.06)
 texture_filter = 0
 texture = ExtResource("1_j3erc")
+
+[node name="SmokeParticles" type="GPUParticles3D" parent="Camera3D" unique_id=895353284]
+emitting = false
+amount = 15
+lifetime = 1.5
+one_shot = true
+explosiveness = 0.8
+process_material = SubResource("ParticleProcessMaterial_7exjq")
+draw_pass_1 = SubResource("QuadMesh_5fit5")
+
+[node name="Sprite3D2" type="Sprite3D" parent="Camera3D" unique_id=1995065880]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1.6, -5)
+top_level = true
+texture = ExtResource("5_mk8l0")
+
+[node name="Label3D" type="Label3D" parent="Camera3D/Sprite3D2" unique_id=1103673376]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1, 0)
+text = "Topple Left"
+font = ExtResource("6_unyr8")
+
+[node name="Label3D2" type="Label3D" parent="Camera3D/Sprite3D2" unique_id=2101116084]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.3, 0)
+text = "Topple Right"
+font = ExtResource("6_unyr8")
+
+[node name="Label3D3" type="Label3D" parent="Camera3D/Sprite3D2" unique_id=61013851]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.4, 0)
+text = "Decline Call"
+font = ExtResource("6_unyr8")
+
+[node name="Label3D4" type="Label3D" parent="Camera3D/Sprite3D2" unique_id=543515155]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1, 0)
+text = "Forward"
+font = ExtResource("6_unyr8")
+
+[node name="Label3D5" type="Label3D" parent="Camera3D/Sprite3D2" unique_id=1222718717]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, -0.2, 0)
+text = "Drag to Smoke"
+font = ExtResource("6_unyr8")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=388340889]
 
