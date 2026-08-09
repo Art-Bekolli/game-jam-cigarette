@@ -4,12 +4,13 @@
 [ext_resource type="PackedScene" uid="uid://b1fv0aqujjm3k" path="res://floor_block.tscn" id="1_vonw3"]
 [ext_resource type="Texture2D" uid="uid://dfbqv5ua0eotr" path="res://c58d078a-856c-4aed-9ff9-0bf536e245f2.jpg" id="3_oi3di"]
 [ext_resource type="PackedScene" uid="uid://dwycho4t12uio" path="res://ipit.tscn" id="4_0b4ue"]
+[ext_resource type="PackedScene" uid="uid://mpxqeo64o1c5" path="res://phone_ui.tscn" id="4_f2txt"]
 [ext_resource type="Texture2D" uid="uid://bv5wdhmwe8r5a" path="res://Shokat/anime-girl-cigs.png" id="4_i2t4f"]
 [ext_resource type="Texture2D" uid="uid://x8kmkn3x27g0" path="res://scenes/textbox.png" id="4_km5ld"]
 [ext_resource type="PackedScene" uid="uid://c1jqwc3ww7gf5" path="res://scenes/cig.tscn" id="4_n6hdu"]
 [ext_resource type="Script" uid="uid://b0wkjubvyov63" path="res://texture_rect.gd" id="5_8cye3"]
 [ext_resource type="Script" uid="uid://bjj83ct42pugh" path="res://randomi.gd" id="5_f2txt"]
-[ext_resource type="PackedScene" uid="uid://mpxqeo64o1c5" path="res://phone_ui.tscn" id="4_f2txt"]
+[ext_resource type="Texture2D" uid="uid://c1fxufruhwtyk" path="res://cigarette_box_sprite-Sheet.png" id="8_2orkt"]
 
 [sub_resource type="GDScript" id="GDScript_afelo"]
 script/source = "extends Node3D
@@ -82,14 +83,19 @@ sky_rotation = Vector3(0, -2.459169, 0)
 [sub_resource type="GDScript" id="GDScript_f2txt"]
 script/source = "extends CanvasLayer
 
-
+@onready var dialogi_bad: Control = $UI/DialogiBad
 @onready var gameover: Control = %gameover
 @onready var dialogi_good: Control = $UI/DialogiGood
 @onready var dialogiyesno: Control = %dialogiyesno
 @onready var main: Node3D = $\"..\"
 @onready var sprite_chance: Node3D = $\"../SpriteChance\"
 @onready var cig_counter: HBoxContainer = %CigCounter
+@onready var animated_sprite_3d_2: AnimatedSprite3D = $AnimatedSprite3D2
+
+@onready var reload: AnimatedSprite2D = %reload
+
 const CIG = preload(\"uid://c1jqwc3ww7gf5\")
+
 
 const MIRI_SHUME = preload(\"uid://cgyqlpbhrjmk4\")
 const KEQI = preload(\"uid://dpd6p52ixl31j\")
@@ -105,12 +111,11 @@ func ChangeVisibilityState(state):
 
 func onAnswer() -> void:
 	ChangeVisibilityState(false)
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(1.5).timeout
 	Global.currentIpit.queue_free()
 	Global.playerCanMove = true
 	main._spawn_enemy_3d()
-	dialogi_good.visible = false
-	
+	dialogi_good.visible = false 
 
 func _on_no_pressed() -> void:
 	onAnswer()
@@ -121,29 +126,37 @@ func _on_yes_pressed() -> void:
 		0:
 			gotCigi(2)
 			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = MIRI_SHUME
-			await get_tree().create_timer(2.0).timeout
+
 			dialogi_good.visible = true
-			await get_tree().create_timer(2.0).timeout
+			await get_tree().create_timer(1.5).timeout
 			dialogi_good.visible = false
+			
 		1:
 			gotCigi(1)
 			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = MIRI
-			await get_tree().create_timer(2.0).timeout
+
 			dialogi_good.visible = true
-			await get_tree().create_timer(2.0).timeout
+			await get_tree().create_timer(1.5).timeout
 			dialogi_good.visible = false
 		2:
 			byeCigi(3)
 			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = KEQI
+
+			dialogi_bad.visible = true
+			await get_tree().create_timer(1.5).timeout
+			dialogi_bad.visible = false
 		3:
 			byeCigi(2)
 			Global.currentIpit.get_node(\"AnimatedSprite3D\").texture = KEQISHUME
+
+			dialogi_bad.visible = true
+			await get_tree().create_timer(1.5).timeout
+			dialogi_bad.visible = false
 		
 
 func gotCigi(ncigi:int):
-	
-	
 	for n in ncigi:
+		reload.play_backwards(\"relad\")
 		var cigarja = CIG.instantiate()
 		cig_counter.add_child(cigarja)
 		
@@ -151,12 +164,113 @@ func gotCigi(ncigi:int):
 func byeCigi(ncigi:int):
 	
 	for n in ncigi:
+		reload.play(\"relad\")
 		if cig_counter.get_child(0) == null:
 			gameover.visible = true
 			return
 		cig_counter.get_child(0).queue_free()
 			
 "
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_aicyk"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(450, 300, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8b0r0"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(0, 0, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h6smj"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(150, 0, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v5j5c"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(300, 0, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5pxul"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(450, 0, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fedht"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(0, 150, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4c15r"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(150, 150, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ait7k"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(300, 150, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_42xju"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(450, 150, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v7sqt"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(0, 300, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ilwjd"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(150, 300, 150, 150)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y3bce"]
+atlas = ExtResource("8_2orkt")
+region = Rect2(300, 300, 150, 150)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_edtrs"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_aicyk")
+}],
+"loop": 1,
+"name": &"nothin",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8b0r0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h6smj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v5j5c")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5pxul")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fedht")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4c15r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ait7k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_42xju")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v7sqt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ilwjd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y3bce")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8b0r0")
+}],
+"loop": 0,
+"name": &"relad",
+"speed": 5.0
+}]
 
 [node name="Level" type="Node3D" unique_id=181682921 node_paths=PackedStringArray("player")]
 script = SubResource("GDScript_afelo")
@@ -176,9 +290,54 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -5.0
+offset_top = -2.0
+offset_right = -5.0
+offset_bottom = -2.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
+
+[node name="DialogiBad" type="Control" parent="DialogController2/UI" unique_id=204823836]
+visible = false
+anchors_preset = 0
+offset_left = 5.0
+offset_top = 436.0
+offset_right = 1147.0
+offset_bottom = 650.0
+
+[node name="TextureRect" type="TextureRect" parent="DialogController2/UI/DialogiBad" unique_id=1955114285]
+layout_mode = 0
+offset_left = -20.0
+offset_top = -183.0
+offset_right = 1148.0
+offset_bottom = 257.0
+texture = ExtResource("4_km5ld")
+
+[node name="Keqi" type="Label" parent="DialogController2/UI/DialogiBad" unique_id=1237863698]
+layout_mode = 0
+offset_left = 104.0
+offset_top = -40.0
+offset_right = 373.0
+offset_bottom = 63.0
+theme_override_font_sizes/font_size = 45
+text = "Keqi"
+
+[node name="Give" type="Label" parent="DialogController2/UI/DialogiBad" unique_id=1885810132]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -164.0
+offset_top = -35.0
+offset_right = 387.0
+offset_bottom = 97.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 45
+text = "Give a migi!"
 
 [node name="DialogiGood" type="Control" parent="DialogController2/UI" unique_id=1099572222]
 visible = false
@@ -190,28 +349,35 @@ offset_bottom = 650.0
 
 [node name="TextureRect" type="TextureRect" parent="DialogController2/UI/DialogiGood" unique_id=1308083853]
 layout_mode = 0
-offset_left = -50.0
-offset_top = -318.0
+offset_left = -20.0
+offset_top = -183.0
 offset_right = 1148.0
 offset_bottom = 257.0
 texture = ExtResource("4_km5ld")
 
 [node name="Miri" type="Label" parent="DialogController2/UI/DialogiGood" unique_id=1233709447]
 layout_mode = 0
-offset_left = 66.0
-offset_top = -131.0
-offset_right = 335.0
-offset_bottom = -28.0
-theme_override_font_sizes/font_size = 75
+offset_left = 104.0
+offset_top = -40.0
+offset_right = 373.0
+offset_bottom = 63.0
+theme_override_font_sizes/font_size = 45
 text = "Miri"
 
 [node name="Take" type="Label" parent="DialogController2/UI/DialogiGood" unique_id=937064879]
-layout_mode = 0
-offset_left = 12.0
-offset_top = -4.0
-offset_right = 563.0
-offset_bottom = 128.0
-theme_override_font_sizes/font_size = 96
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -164.0
+offset_top = -35.0
+offset_right = 387.0
+offset_bottom = 97.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 45
 text = "Take a migi!"
 
 [node name="DoraLevizje" type="Control" parent="DialogController2/UI" unique_id=1522482954]
@@ -346,11 +512,19 @@ layout_mode = 2
 
 [node name="cig" parent="DialogController2/UI/CigCounter" unique_id=1364372331 instance=ExtResource("4_n6hdu")]
 layout_mode = 2
+
+[node name="reload" type="AnimatedSprite2D" parent="DialogController2/UI" unique_id=1445284918]
+unique_name_in_owner = true
+position = Vector2(1090, 281)
+scale = Vector2(-1, 1)
+sprite_frames = SubResource("SpriteFrames_edtrs")
+animation = &"relad"
+
 [node name="PhoneUI" parent="." unique_id=833135230 node_paths=PackedStringArray("player") instance=ExtResource("4_f2txt")]
 player = NodePath("../CharacterBody3D")
 
 [node name="ipit" parent="." unique_id=543376239 instance=ExtResource("4_0b4ue")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.38035607, -0.8572912, -22.090158)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20701551, -0.28632545, -22.090158)
 
 [node name="InitialSend" type="Node3D" parent="ipit" unique_id=791545001]
 
