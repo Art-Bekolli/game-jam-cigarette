@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://b1fv0aqujjm3k" path="res://floor_block.tscn" id="1_vonw3"]
 [ext_resource type="Texture2D" uid="uid://dfbqv5ua0eotr" path="res://c58d078a-856c-4aed-9ff9-0bf536e245f2.jpg" id="3_oi3di"]
 [ext_resource type="PackedScene" uid="uid://dwycho4t12uio" path="res://ipit.tscn" id="4_0b4ue"]
-[ext_resource type="PackedScene" uid="uid://mpxqeo64o1c5" path="res://phone_ui.tscn" id="4_f2txt"]
+[ext_resource type="PackedScene" uid="uid://detaso3d5c7gq" path="res://phone_ui.tscn" id="4_f2txt"]
 [ext_resource type="Texture2D" uid="uid://dgqfpyimt2xv8" path="res://Shokat/evil_bob_hand.png" id="4_h6smj"]
 [ext_resource type="Texture2D" uid="uid://bv5wdhmwe8r5a" path="res://Shokat/anime-girl-cigs.png" id="4_i2t4f"]
 [ext_resource type="Texture2D" uid="uid://x8kmkn3x27g0" path="res://scenes/textbox.png" id="4_km5ld"]
@@ -12,51 +12,66 @@
 [ext_resource type="Script" uid="uid://b0wkjubvyov63" path="res://texture_rect.gd" id="5_8cye3"]
 [ext_resource type="Script" uid="uid://bjj83ct42pugh" path="res://randomi.gd" id="5_f2txt"]
 [ext_resource type="Texture2D" uid="uid://vvik2b0gn7pp" path="res://Shokat/angk_hand.png" id="6_v5j5c"]
+[ext_resource type="FontFile" uid="uid://c8u1x612uw6c8" path="res://rainyhearts.ttf" id="7_2orkt"]
 [ext_resource type="Texture2D" uid="uid://c1fxufruhwtyk" path="res://cigarette_box_sprite-Sheet.png" id="8_2orkt"]
 [ext_resource type="Texture2D" uid="uid://br4y2xgiepour" path="res://Shokat/good_bob_cigs.png" id="9_5pxul"]
+[ext_resource type="Texture2D" uid="uid://dvusf1o1gmtlh" path="res://store.png" id="16_5pxul"]
 
 [sub_resource type="GDScript" id="GDScript_afelo"]
 script/source = "extends Node3D
 
 const IPIT = preload(\"uid://dwycho4t12uio\")
 @onready var ipit: StaticBody3D = $ipit 
+
 @export var floor_block_scene: PackedScene
 @export var player: Node3D
+@export var end_sprite: Sprite3D
 
-const TOTAL_BLOCKS = 100
+const TOTAL_BLOCKS = 45
 const BLOCK_SIZE = 4.0
-# Increase this from 2 to 6 or 8 so blocks don't disappear in front of the camera
 const VISIBLE_DISTANCE = 24.0 # 6 blocks * 4.0 size = 24 meters
 
 var spawned_blocks: Array[Node3D] = []
 var min_time: float = 1.0
 var max_time: float = 2.0
-
-
+var level_finished: bool = false # Prevents scene loading multiple times per frame
 
 func _ready():
 	if not floor_block_scene:
 		push_error(\"Please assign FloorBlock.tscn to the Inspector!\")
 		return
 		
-	for i in range(TOTAL_BLOCKS):
+	# We loop TOTAL_BLOCKS + 2 times to ensure there is a block right beneath 
+	# the end sprite, and one extra block rendered directly after it.
+	for i in range(TOTAL_BLOCKS + 2):
 		var block = floor_block_scene.instantiate() as Node3D
 		add_child(block)
 		block.position = Vector3(0, 0, -i * BLOCK_SIZE)
 		spawned_blocks.append(block)
+		
+	if end_sprite:
+		# Place the end sprite exactly at the TOTAL_BLOCKS mark
+		var final_z = -TOTAL_BLOCKS * BLOCK_SIZE
+		end_sprite.position = Vector3(0, 1.5, final_z)
 
 func _process(_delta):
-	if not player:
+	# Stop running logic if the player doesn't exist or we already won
+	if not player or level_finished:
 		return
 
 	for block in spawned_blocks:
 		# Calculate actual 3D distance between player and block
 		var dist = player.global_position.distance_to(block.global_position)
-		
-		# Show if within range
 		block.visible = dist <= VISIBLE_DISTANCE
 		
-
+	if end_sprite:
+		var dist_to_end = player.global_position.distance_to(end_sprite.global_position)
+		end_sprite.visible = dist_to_end <= VISIBLE_DISTANCE
+		
+		# Win condition: If the player runs past (or hits) the Z position of the end sprite
+		if player.global_position.z <= end_sprite.global_position.z:
+			level_finished = true
+			get_tree().change_scene_to_file(\"res://victory.tscn\") # Adjust path if in a subfolder
 
 func _spawn_enemy_3d() -> void:
 	await get_tree().create_timer(randf_range(min_time, max_time)).timeout
@@ -64,12 +79,12 @@ func _spawn_enemy_3d() -> void:
 	
 	var random_x = randf_range(0, 0)
 	var random_z = randf_range(-10.0, -20.0) 
-	var spawn_position = Vector3(random_x, 0.0, player.global_position. z + random_z)
+	var spawn_position = Vector3(random_x, 0.0, player.global_position.z + random_z)
 	
 	new_enemy.global_position = spawn_position
 	add_child(new_enemy)
 	
-	new_enemy.chance =+ .05
+	new_enemy.chance += 0.05
 "
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_mqlib"]
@@ -244,6 +259,7 @@ func byeCigi(ncigi:int):
 		await get_tree().create_timer(1.5).timeout
 		reload.visible = false
 		
+a
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_aicyk"]
@@ -346,10 +362,11 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Level" type="Node3D" unique_id=181682921 node_paths=PackedStringArray("player")]
+[node name="Level" type="Node3D" unique_id=181682921 node_paths=PackedStringArray("player", "end_sprite")]
 script = SubResource("GDScript_afelo")
 floor_block_scene = ExtResource("1_vonw3")
 player = NodePath("CharacterBody3D")
+end_sprite = NodePath("end-sprite")
 
 [node name="CharacterBody3D" parent="." unique_id=504771904 instance=ExtResource("1_u52ul")]
 
@@ -424,6 +441,7 @@ offset_left = 104.0
 offset_top = -40.0
 offset_right = 373.0
 offset_bottom = 63.0
+theme_override_fonts/font = ExtResource("7_2orkt")
 theme_override_font_sizes/font_size = 45
 text = "Keqi"
 
@@ -440,6 +458,7 @@ offset_right = 387.0
 offset_bottom = 97.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("7_2orkt")
 theme_override_font_sizes/font_size = 45
 text = "Give a migi!"
 
@@ -465,6 +484,7 @@ offset_left = 104.0
 offset_top = -40.0
 offset_right = 373.0
 offset_bottom = 63.0
+theme_override_fonts/font = ExtResource("7_2orkt")
 theme_override_font_sizes/font_size = 45
 text = "Miri"
 
@@ -481,6 +501,7 @@ offset_right = 387.0
 offset_bottom = 97.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("7_2orkt")
 theme_override_font_sizes/font_size = 45
 text = "Take a migi!"
 
@@ -530,6 +551,7 @@ offset_top = -63.76001
 offset_right = 102.0
 offset_bottom = -21.76001
 grow_vertical = 0
+theme_override_fonts/font = ExtResource("7_2orkt")
 theme_override_font_sizes/font_size = 24
 text = "Yes"
 
@@ -546,6 +568,7 @@ offset_right = -18.0
 offset_bottom = -17.76001
 grow_horizontal = 0
 grow_vertical = 0
+theme_override_fonts/font = ExtResource("7_2orkt")
 theme_override_font_sizes/font_size = 24
 text = "No
 "
@@ -563,6 +586,7 @@ offset_right = 267.0
 offset_bottom = 19.619995
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("7_2orkt")
 theme_override_font_sizes/font_size = 45
 text = "HEY"
 
@@ -572,6 +596,7 @@ offset_left = 122.0
 offset_top = -57.0
 offset_right = 265.0
 offset_bottom = 49.0
+theme_override_fonts/font = ExtResource("7_2orkt")
 theme_override_font_sizes/font_size = 46
 text = "???"
 
@@ -630,6 +655,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20701551, -0.28632545, -22.
 [node name="SpriteChance" type="Node3D" parent="." unique_id=762704240]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0194471, 0.030465126, 22.09767)
 script = ExtResource("5_f2txt")
+
+[node name="end-sprite" type="Sprite3D" parent="." unique_id=792448475]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9783247, 0)
+texture = ExtResource("16_5pxul")
 
 [connection signal="pressed" from="DialogController2/UI/dialogiyesno/Panel2/Yes" to="DialogController2" method="_on_yes_pressed"]
 [connection signal="pressed" from="DialogController2/UI/dialogiyesno/Panel2/No" to="DialogController2" method="_on_no_pressed"]

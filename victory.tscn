@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://bpxh165hofxqk"]
+
+[ext_resource type="Texture2D" uid="uid://b00gxe2wjudv0" path="res://party.png" id="1_7bnjr"]
+[ext_resource type="FontFile" uid="uid://c8u1x612uw6c8" path="res://rainyhearts.ttf" id="2_v31sk"]
+
+[node name="victory" type="Control" unique_id=1864338882]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1162089430]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="ColorRect" unique_id=987723512]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_7bnjr")
+
+[node name="Label" type="Label" parent="ColorRect/TextureRect" unique_id=137521162]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -90.5
+offset_top = -11.5
+offset_right = 90.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("2_v31sk")
+text = "You got the ciggies, congrats"
